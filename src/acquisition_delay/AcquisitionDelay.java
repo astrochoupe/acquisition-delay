@@ -1,6 +1,8 @@
 package acquisition_delay;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -35,9 +37,10 @@ public class AcquisitionDelay {
 			for (String line : lines) {
 				lineNumber++;
 				// debug
-				// System.out.println("Ligne " + lineNumber + " : " + line);
+				// System.out.println("Line " + lineNumber + " : " + line);
 
 				String[] fields = line.split(",");
+				// debug
 				// List<String> fields2 = Arrays.asList(fields);
 				// System.out.println(fields2);
 
@@ -115,7 +118,7 @@ public class AcquisitionDelay {
 		for (MeasurePoint measurePoint : measurePoints) {
 			int signal = measurePoint.getSignalInAdu();
 
-			float illuminancePercentage = (float) signal / signalMax;
+			float illuminancePercentage = (float) (signal - signalMin) / (signalMax - signalMin);
 			int illuminanceDuration = Math.round(exposureDurationInMs * illuminancePercentage);
 
 			// we are interested by the values when the light is increasing or decreasing
@@ -133,19 +136,24 @@ public class AcquisitionDelay {
 			}
 			previousIlluminancePercentage = illuminancePercentage;
 		}
+		
+		if(timePpsStart.isEmpty() && timePpsEnd.isEmpty()) {
+			System.err.println("No PPS detected!");
+		}
 
-		// TODO : check if timePpsStart or timePpsEnd are empty
-		double preciseAverageTimePpsStart = timePpsStart.stream().mapToDouble(e -> e).average().getAsDouble();
-		int averageTimePpsStart = Math.round((float) preciseAverageTimePpsStart);
-		double preciseAverageTimePpsEnd = timePpsEnd.stream().mapToDouble(e -> e).average().getAsDouble();
-		int averageTimePpsEnd = Math.round((float) preciseAverageTimePpsEnd);
-
-		System.out.println("List of times PPS start: " + timePpsStart);
-		System.out.println("List of times PPS end: " + timePpsEnd);
-
-		System.out.println("Average time PPS start: " + averageTimePpsStart + " ms");
-		System.out.println("Average time PPS end: " + averageTimePpsEnd + " ms");
-
+		if(!timePpsStart.isEmpty()) {
+			double preciseAverageTimePpsStart = timePpsStart.stream().mapToDouble(e -> e).average().getAsDouble();
+			BigDecimal averageTimePpsStart = BigDecimal.valueOf(preciseAverageTimePpsStart).setScale(1, RoundingMode.HALF_UP);
+			System.out.println("List of times PPS start: " + timePpsStart);
+			System.out.println("Average time PPS start: " + averageTimePpsStart + " ms");
+		}
+		
+		if(!timePpsEnd.isEmpty()) {
+			double preciseAverageTimePpsEnd = timePpsEnd.stream().mapToDouble(e -> e).average().getAsDouble();
+			BigDecimal averageTimePpsEnd = BigDecimal.valueOf(preciseAverageTimePpsEnd).setScale(1, RoundingMode.HALF_UP);
+			System.out.println("List of times PPS end: " + timePpsEnd);
+			System.out.println("Average time PPS end: " + averageTimePpsEnd + " ms");
+		}
 	}
 
 	private int convertDecimalStringToInt(String decimalString) throws NumberFormatException {
