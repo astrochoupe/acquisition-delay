@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class AcquisitionDelay {
@@ -18,7 +19,8 @@ public class AcquisitionDelay {
 			return;
 		}
 
-		calculate(measurePoints, exposureDurationInMs);
+		//calculate(measurePoints, exposureDurationInMs);
+		calculatePrecisely(measurePoints, exposureDurationInMs);
 	}
 
 	private List<MeasurePoint> readFile(String filename) {
@@ -155,11 +157,94 @@ public class AcquisitionDelay {
 			System.out.println("Average time PPS end: " + averageTimePpsEnd + " ms");
 		}
 	}
+	
+	private void calculatePrecisely(List<MeasurePoint> measurePoints, int exposureDurationInMs) {
+
+		BigDecimal exposureDurationInMsBd = BigDecimal.valueOf(exposureDurationInMs);
+		BigDecimal halfExposureDuration = exposureDurationInMsBd.divide(BigDecimal.valueOf(2));
+
+		List<BigDecimal> timePpsStart = new ArrayList<>();
+		List<BigDecimal> timePpsEnd = new ArrayList<>();
+
+		int signalMin = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).min().getAsInt();
+
+		int signalMax = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).max().getAsInt();
+
+		double previousIlluminancePercentage = 0.0f;
+		for (MeasurePoint measurePoint : measurePoints) {
+			int signal = measurePoint.getSignalInAdu();
+
+			double illuminancePercentage = (double) (signal - signalMin) / (signalMax - signalMin);
+
+			BigDecimal illuminanceDuration = BigDecimal.valueOf(exposureDurationInMs * illuminancePercentage);
+			
+			// we are interested by the values when the light is increasing or decreasing
+			if (illuminancePercentage > 0.1 && illuminancePercentage < 0.9) {
+				// if light is increasing
+				if (illuminancePercentage > previousIlluminancePercentage) {
+					BigDecimal timeInMsPpsStart = new BigDecimal(measurePoint.getTimeInMs());
+					timeInMsPpsStart = timeInMsPpsStart.add(halfExposureDuration);
+					timeInMsPpsStart = timeInMsPpsStart.subtract(illuminanceDuration);
+					timePpsStart.add(timeInMsPpsStart);
+				}
+				// else if light if decreasing
+				else {
+					BigDecimal timeInMsPpsEnd = new BigDecimal(measurePoint.getTimeInMs());
+					timeInMsPpsEnd = timeInMsPpsEnd.subtract(halfExposureDuration);
+					timeInMsPpsEnd = timeInMsPpsEnd.add(illuminanceDuration);
+					timePpsEnd.add(timeInMsPpsEnd);
+				}
+			}
+			previousIlluminancePercentage = illuminancePercentage;
+		}
+
+		if (timePpsStart.isEmpty() && timePpsEnd.isEmpty()) {
+			System.err.println("No PPS detected!");
+		}
+
+		if (!timePpsStart.isEmpty()) {
+			BigDecimal averageTimePpsStart = average(timePpsStart, 1);
+			System.out.print("List of times PPS start: ");
+			print(timePpsStart, 1);
+			System.out.println();
+			System.out.println("Average time PPS start: " + averageTimePpsStart + " ms");
+		}
+
+		if (!timePpsEnd.isEmpty()) {
+			BigDecimal averageTimePpsEnd = average(timePpsEnd, 1);
+			System.out.print("List of times PPS end: ");
+			print(timePpsEnd, 1);
+			System.out.println();
+			System.out.println("Average time PPS end: " + averageTimePpsEnd + " ms");
+		}
+	}
 
 	private int convertDecimalStringToInt(String decimalString) throws NumberFormatException {
 		double doubleValue;
 		doubleValue = Double.parseDouble(decimalString);
 		return (int) doubleValue;
+	}
+	
+	private BigDecimal average(List<BigDecimal> list, int scale) {
+		BigDecimal[] totalWithCount = list.stream().filter(bd -> bd != null)
+				.map(bd -> new BigDecimal[] { bd, BigDecimal.ONE })
+				.reduce((a, b) -> new BigDecimal[] { a[0].add(b[0]), a[1].add(BigDecimal.ONE) }).get();
+		return totalWithCount[0].divide(totalWithCount[1], scale, RoundingMode.HALF_UP);
+	}
+	
+	private void print(List<BigDecimal> list, int scale) {
+		System.out.print("[");
+		
+		Iterator<BigDecimal> iterator = list.iterator();
+		while(iterator.hasNext()) {
+			BigDecimal bigDecimal = iterator.next();
+			System.out.print(bigDecimal.setScale(scale, RoundingMode.HALF_UP));
+			if(iterator.hasNext()) {
+				System.out.print(", ");
+			}
+		}
+		
+		System.out.print("]");
 	}
 
 }
