@@ -12,20 +12,24 @@ import java.util.List;
 public class AcquisitionDelay {
 
 	public void calculate(String filename, int exposureDurationInMs) {
-		List<MeasurePoint> measurePoints = readFile(filename);
-
-		if (measurePoints == null || measurePoints.isEmpty()) {
+		List<List<MeasurePoint>> measureArea = readFile(filename);
+		
+		if (measureArea == null || measureArea.isEmpty()) {
 			System.err.println("Nothing to measure");
 			return;
 		}
 
-		//calculate(measurePoints, exposureDurationInMs);
-		calculatePrecisely(measurePoints, exposureDurationInMs);
+		int numArea = 1;
+		for(List<MeasurePoint> measurePoints : measureArea) {
+			System.out.println("==== AREA " + numArea++ + " ====");
+			//calculate(measurePoints, exposureDurationInMs);
+			calculatePrecisely(measurePoints, exposureDurationInMs);
+		}
 	}
 
-	private List<MeasurePoint> readFile(String filename) {
-		List<MeasurePoint> measurePoints = new ArrayList<>();
-
+	private List<List<MeasurePoint>> readFile(String filename) {
+		List<List<MeasurePoint>> measureArea = new ArrayList<>();
+		
 		// read CSV file (made with Tangra software) and put data in memory
 		Path file = Path.of(filename);
 
@@ -79,30 +83,47 @@ public class AcquisitionDelay {
 					continue;
 				}
 
-				int signal;
-				try {
-					signal = convertDecimalStringToInt(fields[2]);
-				} catch (NumberFormatException e) {
-					System.err.println("Line " + lineNumber + " column 3 is not a decimal. Skipping this line.");
+				boolean skipLine = false;
+				int numArea = 0;
+				
+				for (int col = 2; col < fields.length; col=col+2) {
+					int signal;
+					try {
+						signal = convertDecimalStringToInt(fields[col]);
+					} catch (NumberFormatException e) {
+						System.err.println("Line " + lineNumber + " column " + col+1 + " is not a decimal. Skipping this line.");
+						skipLine = true;
+						break;
+					}
+
+					int background;
+					try {
+						background = convertDecimalStringToInt(fields[col+1]);
+					} catch (NumberFormatException e) {
+						System.err.println("Line " + lineNumber + " column " + col+2 + " is not a decimal. Skipping this line.");
+						skipLine = true;
+						break;
+					}
+
+					if(measureArea.size() <= numArea) {
+						measureArea.add(new ArrayList<>());
+					}
+					List<MeasurePoint> measurePoints = measureArea.get(numArea);
+					measurePoints.add(new MeasurePoint(timeInMs, signal, background));
+					numArea++;
+				}
+				
+				if(skipLine) {
 					continue;
 				}
 
-				int background;
-				try {
-					background = convertDecimalStringToInt(fields[3]);
-				} catch (NumberFormatException e) {
-					System.err.println("Line " + lineNumber + " column 4 is not a decimal. Skipping this line.");
-					continue;
-				}
-
-				measurePoints.add(new MeasurePoint(timeInMs, signal, background));
 			}
 			System.out.println("Reading finished");
 		} catch (IOException e) {
 			System.err.println("Error reading file : " + e);
 		}
 
-		return measurePoints;
+		return measureArea;
 	}
 
 	private void calculate(List<MeasurePoint> measurePoints, int exposureDurationInMs) {
