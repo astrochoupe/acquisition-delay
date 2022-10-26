@@ -184,8 +184,8 @@ public class AcquisitionDelay {
 		BigDecimal exposureDurationInMsBd = BigDecimal.valueOf(exposureDurationInMs);
 		BigDecimal halfExposureDuration = exposureDurationInMsBd.divide(BigDecimal.valueOf(2));
 
-		List<BigDecimal> timePpsStart = new ArrayList<>();
-		List<BigDecimal> timePpsEnd = new ArrayList<>();
+		List<BigDecimal> timesPpsStart = new ArrayList<>();
+		List<BigDecimal> timesPpsEnd = new ArrayList<>();
 
 		int signalMin = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).min().getAsInt();
 
@@ -206,37 +206,39 @@ public class AcquisitionDelay {
 					BigDecimal timeInMsPpsStart = new BigDecimal(measurePoint.getTimeInMs());
 					timeInMsPpsStart = timeInMsPpsStart.add(halfExposureDuration);
 					timeInMsPpsStart = timeInMsPpsStart.subtract(illuminanceDuration);
-					timePpsStart.add(timeInMsPpsStart);
+					timesPpsStart.add(timeInMsPpsStart);
 				}
 				// else if light if decreasing
 				else {
 					BigDecimal timeInMsPpsEnd = new BigDecimal(measurePoint.getTimeInMs());
 					timeInMsPpsEnd = timeInMsPpsEnd.subtract(halfExposureDuration);
 					timeInMsPpsEnd = timeInMsPpsEnd.add(illuminanceDuration);
-					timePpsEnd.add(timeInMsPpsEnd);
+					timesPpsEnd.add(timeInMsPpsEnd);
 				}
 			}
 			previousIlluminancePercentage = illuminancePercentage;
 		}
 
-		if (timePpsStart.isEmpty() && timePpsEnd.isEmpty()) {
+		if (timesPpsStart.isEmpty() && timesPpsEnd.isEmpty()) {
 			System.err.println("No PPS detected!");
 		}
 
-		if (!timePpsStart.isEmpty()) {
-			BigDecimal averageTimePpsStart = average(timePpsStart, 1);
+		if (!timesPpsStart.isEmpty()) {
+			BigDecimal averageTimePpsStart = average(timesPpsStart, 1);
+			BigDecimal rmsTimePpsStart = rootMeanSquare(timesPpsStart, averageTimePpsStart, 1);
 			System.out.print("List of times PPS start: ");
-			print(timePpsStart, 1);
+			print(timesPpsStart, 1);
 			System.out.println();
-			System.out.println("Average time PPS start: " + averageTimePpsStart + " ms");
+			System.out.println("Average time PPS start: " + averageTimePpsStart + " ms ± " + rmsTimePpsStart);
 		}
 
-		if (!timePpsEnd.isEmpty()) {
-			BigDecimal averageTimePpsEnd = average(timePpsEnd, 1);
+		if (!timesPpsEnd.isEmpty()) {
+			BigDecimal averageTimePpsEnd = average(timesPpsEnd, 1);
+			BigDecimal rmsTimePpsEnd = rootMeanSquare(timesPpsEnd, averageTimePpsEnd, 1);
 			System.out.print("List of times PPS end: ");
-			print(timePpsEnd, 1);
+			print(timesPpsEnd, 1);
 			System.out.println();
-			System.out.println("Average time PPS end: " + averageTimePpsEnd + " ms");
+			System.out.println("Average time PPS end: " + averageTimePpsEnd + " ms ± " + rmsTimePpsEnd);
 		}
 	}
 
@@ -251,6 +253,43 @@ public class AcquisitionDelay {
 				.map(bd -> new BigDecimal[] { bd, BigDecimal.ONE })
 				.reduce((a, b) -> new BigDecimal[] { a[0].add(b[0]), a[1].add(BigDecimal.ONE) }).get();
 		return totalWithCount[0].divide(totalWithCount[1], scale, RoundingMode.HALF_UP);
+	}
+	
+	/**
+	 * Calculate the root mean square of a list of BigDecimal.
+	 * 
+	 * @param list a list of BigDecimal
+	 * @param mean the average of the list
+	 * @param scale scale of the BigDecimal quotient to be returned
+	 * @return zero if list is null or empty or if mean if null
+	 */
+	private BigDecimal rootMeanSquare(List<BigDecimal> list, BigDecimal mean, int scale) {
+		if(list != null && !list.isEmpty() && mean != null) {
+			BigDecimal variance = variance(list, mean);
+			BigDecimal rootMeanSquare = variance.divide(BigDecimal.valueOf(list.size()), scale, RoundingMode.HALF_UP);
+			return rootMeanSquare;
+		} else {
+			return BigDecimal.ZERO;
+		}	
+	}
+	
+	/**
+	 * Calculate the variance of a list of BigDecimal.
+	 * 
+	 * @param list a list of BigDecimal
+	 * @param mean the average of the list
+	 * @return zero if list is null or empty or if mean if null
+	 */
+	private BigDecimal variance(List<BigDecimal> list, BigDecimal mean) {
+		BigDecimal variance = BigDecimal.ZERO;
+		
+		if(list != null && !list.isEmpty() && mean != null) {
+			for(BigDecimal number : list) {
+				variance = variance.add(number.subtract(mean).pow(2));
+			}
+		}
+		
+		return variance;
 	}
 	
 	private void print(List<BigDecimal> list, int scale) {
