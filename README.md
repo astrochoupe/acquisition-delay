@@ -1,3 +1,11 @@
+# Introduction
+
+The goal of this program is to facilitate the measurement of the acquisition delay of a camera for astronomy usage.
+
+For some astronomy usage (especially for occultations by asteroids), the requirement of time accuracy is very high (< 10 ms). If we use common CCD or CMOS camera, the operating system clocks must be set very precisely. The capturing software must accurately record the date and time. But it is not enough. We need to correct the date and time recorded with the delay between the moment when the light is captured by the sensor and the moment the capturing software records the data.
+
+To know this difference, the principle is to film with the camera a LED that lights up each UTC second. The time recorded when the light is switched on is slightly offset from the start of the UTC second. This is what we want to measure. Amateur astronomers usually use  Tangra software to analyse the video or the images. This program takes as input the Tangra light curve in CSV and give the acquisition delay.
+
 # Requirement
 
 - Java >= 8
