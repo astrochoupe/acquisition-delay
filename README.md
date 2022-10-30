@@ -11,9 +11,11 @@ To know this difference, the principle is to film with the camera a LED that lig
 - Java >= 8
 - A CSV file representing a light curve (usually produced by Tangra) like this :
 
-    FrameNo,Time (UT),Signal (1), Background (1)
-    0,[02:47:20.867],33.000,22.000
-    1,[02:47:20.907],63.000,0.0000
+```
+FrameNo,Time (UT),Signal (1), Background (1)
+0,[02:47:20.867],33.000,22.000
+1,[02:47:20.907],63.000,0.0000
+```
 
 An example file is given in the src/main/config folder.
 
