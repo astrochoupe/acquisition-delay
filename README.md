@@ -7,6 +7,8 @@
     0,[02:47:20.867],33.000,22.000
     1,[02:47:20.907],63.000,0.0000
 
+An example file is given in the src/main/config folder.
+
 # Usage
 
 By default, a file with the name **lightCurve.csv** is searched in the directory as the jar file.
