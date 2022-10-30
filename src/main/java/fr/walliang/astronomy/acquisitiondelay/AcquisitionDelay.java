@@ -1,4 +1,4 @@
-package acquisition_delay;
+package fr.walliang.astronomy.acquisitiondelay;
 
 import java.io.IOException;
 import java.math.BigDecimal;
