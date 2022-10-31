@@ -21,7 +21,7 @@ An example file is given in the src/main/config folder.
 
 # Usage
 
-By default, a file with the name **lightCurve.csv** is searched in the directory as the jar file.
+By default, a file with the name **lightCurve.csv** is searched in the same directory as the jar file.
 
 By default, we assume that the exposure of the frames is **40 ms**.
 
