@@ -17,7 +17,7 @@ FrameNo,Time (UT),Signal (1), Background (1)
 1,[02:47:20.907],63.000,0.0000
 ```
 
-An example file is given in the src/main/config folder.
+Example files are given in the src/main/config folder.
 
 # Usage
 
