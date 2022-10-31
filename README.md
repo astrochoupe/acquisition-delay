@@ -62,3 +62,15 @@ or
 ```console
 java -jar acquisition-delay.jar 30 myLightCurve.csv
 ```
+
+The result is shown in the console, like this :
+
+```console
+==== AREA 1 ====
+List of times PPS start: [35.9, 36.7, 37.6, 37.9, 37.6, 37.5, 38.4, 37.0, 36.8, 36.5, 37.2]
+Average time PPS start: 37.2 ms ± 0.4
+List of times PPS end: [137.3, 137.1, 136.0, 136.8, 135.5, 135.5, 135.2, 136.1, 134.8, 136.7]
+Average time PPS end: 136.1 ms ± 0.7
+```
+
+The program can measure several areas (like top, middle and bottom of the sensor).
