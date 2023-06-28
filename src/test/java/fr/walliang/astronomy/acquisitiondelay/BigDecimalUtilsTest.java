@@ -1,5 +1,6 @@
 package fr.walliang.astronomy.acquisitiondelay;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
@@ -18,6 +19,16 @@ public class BigDecimalUtilsTest {
 		assertThrows(NoSuchElementException.class, () -> {
 			BigDecimalUtils.average(list, 0);
 		});
+	}
+	
+	@Test
+	public void testAverageWhenOneValue() {
+		List<BigDecimal> list = new ArrayList<>();
+		list.add(BigDecimal.ONE);
+		
+		BigDecimal result = BigDecimalUtils.average(list, 0);
+		
+		assertEquals(BigDecimal.ONE, result);
 	}
 
 }
