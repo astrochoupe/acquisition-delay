@@ -8,7 +8,7 @@ To know this difference, the principle is to film with the camera a LED that lig
 
 # Requirement
 
-- Java >= 8
+- Java >= 17
 - A CSV file representing a light curve (usually produced by Tangra) like this :
 
 ```
