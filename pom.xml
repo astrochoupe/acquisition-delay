@@ -3,7 +3,7 @@
 
 	<groupId>fr.walliang.astronomy.acquisitiondelay</groupId>
 	<artifactId>acquisition-delay</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<properties>
