@@ -2,7 +2,6 @@ package fr.walliang.astronomy.acquisitiondelay;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -10,20 +9,26 @@ import java.util.List;
 
 public class AcquisitionDelay {
 
-	public void calculate(String filename, int exposureDurationInMs) {
+	public String calculate(String filename, int exposureDurationInMs) {
+		StringBuilder result = new StringBuilder();
+		
 		List<List<MeasurePoint>> measureArea = readFile(filename);
 		
 		if (measureArea == null || measureArea.isEmpty()) {
-			System.err.println("Nothing to measure");
-			return;
+			String errorMessage = "Nothing to measure";
+			System.err.println(errorMessage);
+			return errorMessage;
 		}
 
 		int numArea = 1;
 		for(List<MeasurePoint> measurePoints : measureArea) {
-			System.out.println("==== AREA " + numArea++ + " ====");
-			//calculate(measurePoints, exposureDurationInMs);
-			calculatePrecisely(measurePoints, exposureDurationInMs);
+			result.append("==== AREA " + numArea++ + " ====");
+			result.append("\n");
+			result.append(calculatePrecisely(measurePoints, exposureDurationInMs));
 		}
+		
+		System.out.print(result);
+		return result.toString();
 	}
 
 	private List<List<MeasurePoint>> readFile(String filename) {
@@ -124,61 +129,9 @@ public class AcquisitionDelay {
 
 		return measureArea;
 	}
-
-	private void calculate(List<MeasurePoint> measurePoints, int exposureDurationInMs) {
-
-		int halfExposureDuration = Math.round((float) exposureDurationInMs / 2);
-
-		List<Integer> timePpsStart = new ArrayList<>();
-		List<Integer> timePpsEnd = new ArrayList<>();
-
-		int signalMin = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).min().getAsInt();
-
-		int signalMax = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).max().getAsInt();
-
-		float previousIlluminancePercentage = 0.0f;
-		for (MeasurePoint measurePoint : measurePoints) {
-			int signal = measurePoint.getSignalInAdu();
-
-			float illuminancePercentage = (float) (signal - signalMin) / (signalMax - signalMin);
-			int illuminanceDuration = Math.round(exposureDurationInMs * illuminancePercentage);
-
-			// we are interested by the values when the light is increasing or decreasing
-			if (illuminancePercentage > 0.1 && illuminancePercentage < 0.9) {
-				// if light is increasing
-				if (illuminancePercentage > previousIlluminancePercentage) {
-					int timeInMsPpsStart = measurePoint.getTimeInMs() + halfExposureDuration - illuminanceDuration;
-					timePpsStart.add(timeInMsPpsStart);
-				}
-				// else if light if decreasing
-				else {
-					int timeInMsPpsStart = measurePoint.getTimeInMs() - halfExposureDuration + illuminanceDuration;
-					timePpsEnd.add(timeInMsPpsStart);
-				}
-			}
-			previousIlluminancePercentage = illuminancePercentage;
-		}
-		
-		if(timePpsStart.isEmpty() && timePpsEnd.isEmpty()) {
-			System.err.println("No PPS detected!");
-		}
-
-		if(!timePpsStart.isEmpty()) {
-			double preciseAverageTimePpsStart = timePpsStart.stream().mapToDouble(e -> e).average().getAsDouble();
-			BigDecimal averageTimePpsStart = BigDecimal.valueOf(preciseAverageTimePpsStart).setScale(1, RoundingMode.HALF_UP);
-			System.out.println("List of times PPS start: " + timePpsStart);
-			System.out.println("Average time PPS start: " + averageTimePpsStart + " ms");
-		}
-		
-		if(!timePpsEnd.isEmpty()) {
-			double preciseAverageTimePpsEnd = timePpsEnd.stream().mapToDouble(e -> e).average().getAsDouble();
-			BigDecimal averageTimePpsEnd = BigDecimal.valueOf(preciseAverageTimePpsEnd).setScale(1, RoundingMode.HALF_UP);
-			System.out.println("List of times PPS end: " + timePpsEnd);
-			System.out.println("Average time PPS end: " + averageTimePpsEnd + " ms");
-		}
-	}
 	
-	private void calculatePrecisely(List<MeasurePoint> measurePoints, int exposureDurationInMs) {
+	private String calculatePrecisely(List<MeasurePoint> measurePoints, int exposureDurationInMs) {
+		StringBuilder result = new StringBuilder();
 
 		BigDecimal exposureDurationInMsBd = BigDecimal.valueOf(exposureDurationInMs);
 		BigDecimal halfExposureDuration = exposureDurationInMsBd.divide(BigDecimal.valueOf(2));
@@ -225,20 +178,24 @@ public class AcquisitionDelay {
 		if (!timesPpsStart.isEmpty()) {
 			BigDecimal averageTimePpsStart = BigDecimalUtils.average(timesPpsStart, 1);
 			BigDecimal rmsTimePpsStart = BigDecimalUtils.rootMeanSquare(timesPpsStart, averageTimePpsStart, 1);
-			System.out.print("List of times PPS start: ");
-			BigDecimalUtils.print(timesPpsStart, 1);
-			System.out.println();
-			System.out.println("Average time PPS start: " + averageTimePpsStart + " ms ± " + rmsTimePpsStart);
+			result.append("List of times PPS start: ");
+			result.append(BigDecimalUtils.toString(timesPpsStart, 1));
+			result.append("\n");
+			result.append("Average time PPS start: " + averageTimePpsStart + " ms ± " + rmsTimePpsStart);
+			result.append("\n");
 		}
 
 		if (!timesPpsEnd.isEmpty()) {
 			BigDecimal averageTimePpsEnd = BigDecimalUtils.average(timesPpsEnd, 1);
 			BigDecimal rmsTimePpsEnd = BigDecimalUtils.rootMeanSquare(timesPpsEnd, averageTimePpsEnd, 1);
-			System.out.print("List of times PPS end: ");
-			BigDecimalUtils.print(timesPpsEnd, 1);
-			System.out.println();
-			System.out.println("Average time PPS end: " + averageTimePpsEnd + " ms ± " + rmsTimePpsEnd);
+			result.append("List of times PPS end: ");
+			result.append(BigDecimalUtils.toString(timesPpsEnd, 1));
+			result.append("\n");
+			result.append("Average time PPS end: " + averageTimePpsEnd + " ms ± " + rmsTimePpsEnd);
+			result.append("\n");
 		}
+		
+		return result.toString();
 	}
 
 	private int convertDecimalStringToInt(String decimalString) throws NumberFormatException {

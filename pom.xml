@@ -21,7 +21,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>fr.walliang.astronomy.acquisitiondelay.Cli</mainClass>
+							<mainClass>fr.walliang.astronomy.acquisitiondelay.Gui</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

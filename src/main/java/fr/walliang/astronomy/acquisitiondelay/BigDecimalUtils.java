@@ -68,23 +68,26 @@ public class BigDecimalUtils {
 	}
 
 	/**
-	 * Print a list of BigDecimal.
+	 * Return a String that represent a list of BigDecimal.
 	 * 
 	 * @param list  a list of BigDecimal to print
 	 * @param scale scale of the BigDecimal quotient to be returned
+	 * @return String the String reprensenting the list of BigDecimal
 	 */
-	public static void print(List<BigDecimal> list, int scale) {
-		System.out.print("[");
+	public static String toString(List<BigDecimal> list, int scale) {
+		StringBuffer result = new StringBuffer();
+		result.append("[");
 
 		Iterator<BigDecimal> iterator = list.iterator();
 		while (iterator.hasNext()) {
 			BigDecimal bigDecimal = iterator.next();
-			System.out.print(bigDecimal.setScale(scale, RoundingMode.HALF_UP));
+			result.append(bigDecimal.setScale(scale, RoundingMode.HALF_UP));
 			if (iterator.hasNext()) {
-				System.out.print(", ");
+				result.append(", ");
 			}
 		}
 
-		System.out.print("]");
+		result.append("]");
+		return result.toString();
 	}
 }
