@@ -1,6 +1,6 @@
 package fr.walliang.astronomy.acquisitiondelay;
 
-public class Launch {
+public class Cli {
 
 	public static void main(String[] args) {
 		String filename = "lightCurve.csv";
