@@ -7,14 +7,19 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Gui extends JFrame {
 
 	private static final long serialVersionUID = 290801423057511060L;
+	
+	private JSpinner exposureField;
 	
 	private JTextArea textArea;
 
@@ -28,6 +33,16 @@ public class Gui extends JFrame {
 
 		setSize(500, 350);
 
+		// create a label for exposure field
+		JLabel exposureLabel = new JLabel("Exposure time (ms):");
+		
+		// create the exposure field
+		SpinnerNumberModel spinnerModel = new SpinnerNumberModel();
+		spinnerModel.setMinimum(1);
+		exposureField = new JSpinner(spinnerModel);
+		exposureField.setValue(40);
+		
+		// create a button
 		JButton openFileButton = new JButton("Open CSV file from Tangra...");
 
 		openFileButton.addActionListener(new ActionListener() {
@@ -54,24 +69,33 @@ public class Gui extends JFrame {
 			}
 		});
 
-		JPanel panel = new JPanel();
-		//panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-		panel.add(openFileButton);
-
+		// create a textarea
 		textArea = new JTextArea(15,40);
 		textArea.setEditable(false);
 		JScrollPane scrollPane = new JScrollPane(textArea);
+		
+		// create main panel
+		JPanel panel = new JPanel();
+
+		// add components to panel
+		panel.add(exposureLabel);
+		panel.add(exposureField);
+		panel.add(openFileButton);
 		panel.add(scrollPane);
 
-		getContentPane().add(panel);
+		// add panel to window
+		add(panel);
 
 	}
 
 	private void readAndProcessFile(File file) {
 		textArea.setText("Reading file and processing...");
 		
+		Integer exposure = (Integer) exposureField.getValue();
+		System.out.println("Exposure: " + exposure + " ms");
+		
 		AcquisitionDelay acquisitionDelay = new AcquisitionDelay();
-		String result = acquisitionDelay.calculate(file.getAbsolutePath(), 40);
+		String result = acquisitionDelay.calculate(file.getAbsolutePath(), exposure);
 		
 		textArea.setText(result);
 	}
