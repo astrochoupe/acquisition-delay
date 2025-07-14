@@ -19,31 +19,31 @@ FrameNo,Time (UT),Signal (1), Background (1)
 
 Example files are given in the src/main/config folder.
 
-# Building
-
-To build this program you need Maven and JDK >= 8.
-
-Use this command:
-
-```console
-mvn clean package
-```
+This program assumes that the PPS LED lights up for 100 ms.
 
 # Usage
 
 ## GUI (graphical user interface)
 
-By default, we assume that the exposure of the frames is **40 ms**.
+Download the JAR file and the run.bat (Windows) or run.sh (Linux) file.
 
-In a future version, you will be able to override this default value.
+To launch the program, double click on the JAR file.
 
-To launch the program, use this command line:
+If your system asks you which application to open the program with, choose Java.
+
+If it doesn't work, click on the run.bat (Windows) or run.sh (Linux) file.
+
+Or as a last resort use this command line:
 
 ```console
-java -jar acquisition-delay.jar
+java -jar acquisition-delay-0.0.3.jar
 ```
 
-A window opens. Select your CSV file.
+A window opens. Choose your exposure time and select your CSV file.
+
+The file is processed and the result appears:
+
+![Result](assets/screenshot_results.png)
 
 ## CLI (command line interface)
 
@@ -102,3 +102,15 @@ Average time PPS end: 136.1 ms ± 0.7
 ```
 
 The program can measure several areas (like top, middle and bottom of the sensor).
+
+# Building / compiling
+
+If you want to build/compile this program by your own, you need Maven and JDK >= 8.
+
+Use this command:
+
+```console
+mvn clean package
+```
+
+The resulting JAR file is stored in the target/ folder.
