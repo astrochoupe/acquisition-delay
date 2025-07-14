@@ -132,6 +132,7 @@ public class AcquisitionDelay {
 	
 	private String calculatePrecisely(List<MeasurePoint> measurePoints, int exposureDurationInMs) {
 		StringBuilder result = new StringBuilder();
+		int nbMeasurement = 1;
 
 		BigDecimal exposureDurationInMsBd = BigDecimal.valueOf(exposureDurationInMs);
 		BigDecimal halfExposureDuration = exposureDurationInMsBd.divide(BigDecimal.valueOf(2));
@@ -152,7 +153,7 @@ public class AcquisitionDelay {
 			BigDecimal illuminanceDuration = BigDecimal.valueOf(exposureDurationInMs * illuminancePercentage);
 			
 			// we are interested by the values when the light is increasing or decreasing
-			if (illuminancePercentage > 0.1 && illuminancePercentage < 0.9) {
+			if (illuminancePercentage > 0.1 && illuminancePercentage < 0.9  && nbMeasurement > 1) {
 				// if light is increasing
 				if (illuminancePercentage > previousIlluminancePercentage) {
 					BigDecimal timeInMsPpsStart = new BigDecimal(measurePoint.getTimeInMs());
@@ -169,6 +170,7 @@ public class AcquisitionDelay {
 				}
 			}
 			previousIlluminancePercentage = illuminancePercentage;
+			nbMeasurement++;
 		}
 
 		if (timesPpsStart.isEmpty() && timesPpsEnd.isEmpty()) {
