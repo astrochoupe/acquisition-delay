@@ -47,7 +47,7 @@ A window opens. Select your CSV file.
 
 ## CLI (command line interface)
 
-**The CLI is now disabled** (replaced by the GUI) but this documentation remains for memory.
+**The CLI is disabled** since version 0.0.2 (replaced by the GUI) but this documentation remains for memory.
 
 By default, a file with the name **lightCurve.csv** is searched in the same directory as the jar file.
 
