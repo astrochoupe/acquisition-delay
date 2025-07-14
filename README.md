@@ -19,7 +19,7 @@ FrameNo,Time (UT),Signal (1), Background (1)
 
 Example files are given in the src/main/config folder.
 
-This program assumes that the PPS LED lights up for 100 ms.
+This program assumes that the PPS LED lights up for 100 ms and the time is the middle of the exposure.
 
 # Usage
 
@@ -114,3 +114,33 @@ mvn clean package
 ```
 
 The resulting JAR file is stored in the target/ folder.
+
+# About the calculation
+
+Only the time and the signal columns of the CSV are used.
+
+We assume that the LED is on for 100 ms and the exposure is less than 100 ms.
+
+The algorithm determines the minimum and maximum signal in the series.
+
+The minimum occurs when the LED is off during the whole exposure.
+
+The maximum occurs when the LED is on during the whole exposure.
+
+Intermediate values occur when the LED is on for part of the exposure time. We consider only values that are 10% above minimum and 10% under maximum.
+
+If the signal is greater than the signal of the previous frame, we consider that the LED lights up during the exposure.
+
+Illumination percentage is (signal - minimum signal) / (maximum signal - minimum signal).
+
+Illumination duration is (duration of exposure * illumination percentage).
+
+Time of PPS start = Time of the frame (middle of the exposure) + (duration of exposure / 2) - (illumination duration)
+
+Example:
+
+![Calculation schema](assets/calculation_schema.png)
+
+If the signal is less than the signal of the previous frame, we consider that the LED turns off during the exposure.
+
+Time of PPS end = Time of the frame (middle of the exposure) - (duration of exposure / 2) + (duration of exposure * illumination percentage)
