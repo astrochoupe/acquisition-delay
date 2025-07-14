@@ -33,10 +33,10 @@ If your system asks you which application to open the program with, choose Java.
 
 If it doesn't work, click on the run.bat (Windows) or run.sh (Linux) file.
 
-Or as a last resort use this command line:
+Or as a last resort use this command line (replace x.x.x by the version number):
 
 ```console
-java -jar acquisition-delay-0.0.3.jar
+java -jar acquisition-delay-x.x.x.jar
 ```
 
 A window opens. Choose your exposure time and select your CSV file.
