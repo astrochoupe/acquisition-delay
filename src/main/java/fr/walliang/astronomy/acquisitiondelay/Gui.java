@@ -15,6 +15,9 @@ import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+/**
+ * Graphical user interface.
+ */
 public class Gui extends JFrame {
 
 	private static final long serialVersionUID = 290801423057511060L;

@@ -1,5 +1,8 @@
 package fr.walliang.astronomy.acquisitiondelay;
 
+/**
+ * Class that represent a line in the CSV file.
+ */
 public class MeasurePoint {
 	private int timeInMs;
 	private int signalInAdu;

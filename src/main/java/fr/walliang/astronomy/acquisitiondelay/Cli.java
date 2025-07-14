@@ -1,5 +1,8 @@
 package fr.walliang.astronomy.acquisitiondelay;
 
+/**
+ * Command line interface to run the program.
+ */
 public class Cli {
 
 	public static void main(String[] args) {
