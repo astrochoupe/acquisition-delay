@@ -153,10 +153,19 @@ public class AcquisitionDelay {
 			BigDecimal illuminanceDuration = BigDecimal.valueOf(exposureDurationInMs * illuminancePercentage);
 			
 			// we are interested by the values when the light is increasing or decreasing
+			// skip first measurement because it can't be compared to the previous
 			if (illuminancePercentage > 0.1 && illuminancePercentage < 0.9  && nbMeasurement > 1) {
 				// if light is increasing
 				if (illuminancePercentage > previousIlluminancePercentage) {
-					BigDecimal timeInMsPpsStart = new BigDecimal(measurePoint.getTimeInMs());
+					int timeInMs = measurePoint.getTimeInMs();
+					
+					// if time of exposure seems to be just before the PPS (time in ms is 9xx) because of the jitter
+					// then we substract 1000 ms to have a result value between 0 and 999 ms
+					if(timeInMs > 900) {
+						timeInMs -= 1000;
+					}
+					
+					BigDecimal timeInMsPpsStart = new BigDecimal(timeInMs);
 					timeInMsPpsStart = timeInMsPpsStart.add(halfExposureDuration);
 					timeInMsPpsStart = timeInMsPpsStart.subtract(illuminanceDuration);
 					timesPpsStart.add(timeInMsPpsStart);
