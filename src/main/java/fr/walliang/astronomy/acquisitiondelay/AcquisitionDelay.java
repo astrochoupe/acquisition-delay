@@ -159,7 +159,7 @@ public class AcquisitionDelay {
 				if (illuminancePercentage > previousIlluminancePercentage) {
 					int timeInMs = measurePoint.getTimeInMs();
 					
-					// if the beginning of exposure is just before the PPS (time in ms is 9xx)
+					// if the time in ms is > 900
 					// then we substract 1000 ms to have a led firing time value between 0 and 999 ms
 					if(timeInMs > 900) {
 						timeInMs -= 1000;
