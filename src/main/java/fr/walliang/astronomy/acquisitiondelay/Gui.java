@@ -42,6 +42,7 @@ public class Gui extends JFrame {
 		// create the exposure field
 		SpinnerNumberModel spinnerModel = new SpinnerNumberModel();
 		spinnerModel.setMinimum(1);
+		spinnerModel.setMaximum(99);
 		exposureField = new JSpinner(spinnerModel);
 		exposureField.setValue(40);
 		
