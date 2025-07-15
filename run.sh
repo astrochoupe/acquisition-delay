@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar acquisition-delay-0.0.4.jar
+java -jar acquisition-delay-0.0.5.jar
