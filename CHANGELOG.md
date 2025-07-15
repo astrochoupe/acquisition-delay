@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.0.5] - 2025-07-15
+
+Fix a problem of compatibility with Java 8
+
 ## [0.0.4] - 2025-07-14
 
 Fix some bugs
