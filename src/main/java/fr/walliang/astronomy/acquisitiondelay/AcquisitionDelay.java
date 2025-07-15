@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class AcquisitionDelay {
 		List<List<MeasurePoint>> measureArea = new ArrayList<>();
 		
 		// read CSV file (made with Tangra software) and put data in memory
-		Path file = Path.of(filename);
+		Path file = Paths.get(filename);
 
 		System.out.println("Reading " + file.toAbsolutePath().toString());
 
