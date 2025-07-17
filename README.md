@@ -45,6 +45,30 @@ The file is processed and the result appears:
 
 ![Result](assets/screenshot_results.png)
 
+### Associate JAR file to Java on Windows
+
+Start a command line (cmd) as an Administrator
+
+Check your file type association:
+
+```console
+assoc .jar
+ftype jarfile
+```
+
+Change java path like this:
+
+```console
+ftype jarfile=C:\myjavapath\javaw.exe -jar "%1" %*
+```
+
+Which means, that if someone starts a jar file, the command would be:
+
+```console
+C:\myjavapath\javaw.exe -jar "example.jar" parameter1 parameter2
+```
+
+
 ## CLI (command line interface)
 
 **The CLI is disabled** since version 0.0.2 (replaced by the GUI) but this documentation remains for memory.
