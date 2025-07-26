@@ -41,8 +41,7 @@ public class BigDecimalUtils {
 	public static BigDecimal rootMeanSquare(List<BigDecimal> list, BigDecimal mean, int scale) {
 		if (list != null && !list.isEmpty() && mean != null) {
 			BigDecimal variance = variance(list, mean);
-			BigDecimal rootMeanSquare = variance.divide(BigDecimal.valueOf(list.size()), scale, RoundingMode.HALF_UP);
-			return rootMeanSquare;
+			return variance.divide(BigDecimal.valueOf(list.size()), scale, RoundingMode.HALF_UP);
 		} else {
 			return BigDecimal.ZERO;
 		}
