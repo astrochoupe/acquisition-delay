@@ -47,6 +47,8 @@ public class TangraCsvFileReader {
 				lineNumber++;
 				// debug
 				// System.out.println("Line " + lineNumber + " : " + line);
+				
+				// TODO : parse file to get Y coordinate of the object
 
 				String[] fields = line.split(",");
 				// debug
