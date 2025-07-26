@@ -1,10 +1,6 @@
 package fr.walliang.astronomy.acquisitiondelay;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,16 +9,18 @@ public class AcquisitionDelay {
 	public String calculate(String filename, int exposureDurationInMs) {
 		StringBuilder result = new StringBuilder();
 		
-		List<List<MeasurePoint>> objectsMeasurements = readFile(filename);
+		TangraCsvFileReader tangraFile = new TangraCsvFileReader(filename);
+		List<ObjectInfomation> objects = tangraFile.parseFile();
 		
-		if (objectsMeasurements == null || objectsMeasurements.isEmpty()) {
+		if (objects == null || objects.isEmpty()) {
 			String errorMessage = "Nothing to measure";
 			System.err.println(errorMessage);
 			return errorMessage;
 		}
 
 		int numObject = 1;
-		for(List<MeasurePoint> measurePoints : objectsMeasurements) {
+		for(ObjectInfomation object : objects) {
+			List<MeasurePoint> measurePoints = object.getMeasures();
 			result.append("==== OBJECT " + numObject++ + " ====");
 			result.append("\n");
 			result.append(calculatePrecisely(measurePoints, exposureDurationInMs));
@@ -32,104 +30,7 @@ public class AcquisitionDelay {
 		return result.toString();
 	}
 
-	private List<List<MeasurePoint>> readFile(String filename) {
-		List<List<MeasurePoint>> objectsMeasurements = new ArrayList<>();
-		
-		// read CSV file (made with Tangra software) and put data in memory
-		Path file = Paths.get(filename);
 
-		System.out.println("Reading " + file.toAbsolutePath().toString());
-
-		int lineNumber = 0;
-
-		try {
-			List<String> lines = Files.readAllLines(file);
-
-			for (String line : lines) {
-				lineNumber++;
-				// debug
-				// System.out.println("Line " + lineNumber + " : " + line);
-
-				String[] fields = line.split(",");
-				// debug
-				// List<String> fields2 = Arrays.asList(fields);
-				// System.out.println(fields2);
-
-				if (fields.length < 4) {
-					System.err.println("Line " + lineNumber
-							+ " cannot be parsed as comma separated values. There must be at least 4 comma separated fields. Skipping this line.");
-					continue;
-				}
-
-				try {
-					int frameNumber = Integer.parseInt(fields[0]);
-				} catch (NumberFormatException e) {
-					System.err.println("Line " + lineNumber + " column 1 is not an integer. Skipping this line.");
-					continue;
-				}
-
-				String time = fields[1];
-				String[] timeSplit = time.split("\\.");
-				if (timeSplit.length != 2) {
-					System.err.println("Line " + lineNumber + " column 2"
-							+ " cannot separate time in s and time in ms by a point. Skipping this line.");
-					continue;
-				}
-				int timeInMs;
-				try {
-					timeInMs = Integer.valueOf(timeSplit[1].substring(0, 3));
-				} catch (NumberFormatException e1) {
-					System.err.println("Line " + lineNumber + " column 2"
-							+ " cannot convert time in ms after the point to integer. Skipping this line.");
-					continue;
-				} catch (IndexOutOfBoundsException e2) {
-					System.err.println("Line " + lineNumber + " column 2"
-							+ " string after point is longer that 4 caracters. Skipping this line.");
-					continue;
-				}
-
-				boolean skipLine = false;
-				int numObject = 0;
-				
-				for (int col = 2; col < fields.length; col=col+2) {
-					int signal;
-					try {
-						signal = convertDecimalStringToInt(fields[col]);
-					} catch (NumberFormatException e) {
-						System.err.println("Line " + lineNumber + " column " + col+1 + " is not a decimal. Skipping this line.");
-						skipLine = true;
-						break;
-					}
-
-					int background;
-					try {
-						background = convertDecimalStringToInt(fields[col+1]);
-					} catch (NumberFormatException e) {
-						System.err.println("Line " + lineNumber + " column " + col+2 + " is not a decimal. Skipping this line.");
-						skipLine = true;
-						break;
-					}
-
-					if(objectsMeasurements.size() <= numObject) {
-						objectsMeasurements.add(new ArrayList<>());
-					}
-					List<MeasurePoint> measurePoints = objectsMeasurements.get(numObject);
-					measurePoints.add(new MeasurePoint(timeInMs, signal, background));
-					numObject++;
-				}
-				
-				if(skipLine) {
-					continue;
-				}
-
-			}
-			System.out.println("Reading finished");
-		} catch (IOException e) {
-			System.err.println("Error reading file : " + e);
-		}
-
-		return objectsMeasurements;
-	}
 	
 	private String calculatePrecisely(List<MeasurePoint> measurePoints, int exposureDurationInMs) {
 		StringBuilder result = new StringBuilder();
@@ -208,12 +109,6 @@ public class AcquisitionDelay {
 		}
 		
 		return result.toString();
-	}
-
-	private int convertDecimalStringToInt(String decimalString) throws NumberFormatException {
-		double doubleValue;
-		doubleValue = Double.parseDouble(decimalString);
-		return (int) doubleValue;
 	}
 
 }
