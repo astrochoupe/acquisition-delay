@@ -13,17 +13,17 @@ public class AcquisitionDelay {
 	public String calculate(String filename, int exposureDurationInMs) {
 		StringBuilder result = new StringBuilder();
 		
-		List<List<MeasurePoint>> measureArea = readFile(filename);
+		List<List<MeasurePoint>> objectsMeasurements = readFile(filename);
 		
-		if (measureArea == null || measureArea.isEmpty()) {
+		if (objectsMeasurements == null || objectsMeasurements.isEmpty()) {
 			String errorMessage = "Nothing to measure";
 			System.err.println(errorMessage);
 			return errorMessage;
 		}
 
-		int numArea = 1;
-		for(List<MeasurePoint> measurePoints : measureArea) {
-			result.append("==== AREA " + numArea++ + " ====");
+		int numObject = 1;
+		for(List<MeasurePoint> measurePoints : objectsMeasurements) {
+			result.append("==== OBJECT " + numObject++ + " ====");
 			result.append("\n");
 			result.append(calculatePrecisely(measurePoints, exposureDurationInMs));
 		}
@@ -33,7 +33,7 @@ public class AcquisitionDelay {
 	}
 
 	private List<List<MeasurePoint>> readFile(String filename) {
-		List<List<MeasurePoint>> measureArea = new ArrayList<>();
+		List<List<MeasurePoint>> objectsMeasurements = new ArrayList<>();
 		
 		// read CSV file (made with Tangra software) and put data in memory
 		Path file = Paths.get(filename);
@@ -89,7 +89,7 @@ public class AcquisitionDelay {
 				}
 
 				boolean skipLine = false;
-				int numArea = 0;
+				int numObject = 0;
 				
 				for (int col = 2; col < fields.length; col=col+2) {
 					int signal;
@@ -110,12 +110,12 @@ public class AcquisitionDelay {
 						break;
 					}
 
-					if(measureArea.size() <= numArea) {
-						measureArea.add(new ArrayList<>());
+					if(objectsMeasurements.size() <= numObject) {
+						objectsMeasurements.add(new ArrayList<>());
 					}
-					List<MeasurePoint> measurePoints = measureArea.get(numArea);
+					List<MeasurePoint> measurePoints = objectsMeasurements.get(numObject);
 					measurePoints.add(new MeasurePoint(timeInMs, signal, background));
-					numArea++;
+					numObject++;
 				}
 				
 				if(skipLine) {
@@ -128,7 +128,7 @@ public class AcquisitionDelay {
 			System.err.println("Error reading file : " + e);
 		}
 
-		return measureArea;
+		return objectsMeasurements;
 	}
 	
 	private String calculatePrecisely(List<MeasurePoint> measurePoints, int exposureDurationInMs) {
