@@ -75,7 +75,7 @@ public class BigDecimalUtils {
 	 * @return String the String reprensenting the list of BigDecimal
 	 */
 	public static String toString(List<BigDecimal> list, int scale) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		result.append("[");
 
 		Iterator<BigDecimal> iterator = list.iterator();
