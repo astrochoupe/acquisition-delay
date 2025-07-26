@@ -21,19 +21,19 @@ public class AcquisitionDelay {
 		int numObject = 1;
 		for(ObjectInfomation object : objects) {
 			List<MeasurePoint> measurePoints = object.getMeasures();
+			ObjectResult objectResult = calculatePrecisely(measurePoints, exposureDurationInMs);
+			
 			result.append("==== OBJECT " + numObject++ + " ====");
 			result.append("\n");
-			result.append(calculatePrecisely(measurePoints, exposureDurationInMs));
+			result.append(objectResult);
 		}
 		
 		System.out.print(result);
 		return result.toString();
 	}
 
-
-	
-	private String calculatePrecisely(List<MeasurePoint> measurePoints, int exposureDurationInMs) {
-		StringBuilder result = new StringBuilder();
+	private ObjectResult calculatePrecisely(List<MeasurePoint> measurePoints, int exposureDurationInMs) {
+		ObjectResult objectResult = new ObjectResult();
 		int nbMeasurement = 1;
 
 		BigDecimal exposureDurationInMsBd = BigDecimal.valueOf(exposureDurationInMs);
@@ -84,31 +84,25 @@ public class AcquisitionDelay {
 			nbMeasurement++;
 		}
 
-		if (timesPpsStart.isEmpty() && timesPpsEnd.isEmpty()) {
-			System.err.println("No PPS detected!");
-		}
-
 		if (!timesPpsStart.isEmpty()) {
 			BigDecimal averageTimePpsStart = BigDecimalUtils.average(timesPpsStart, 1);
 			BigDecimal rmsTimePpsStart = BigDecimalUtils.rootMeanSquare(timesPpsStart, averageTimePpsStart, 1);
-			result.append("List of times PPS start: ");
-			result.append(BigDecimalUtils.toString(timesPpsStart, 1));
-			result.append("\n");
-			result.append("Average time PPS start: " + averageTimePpsStart + " ms ± " + rmsTimePpsStart);
-			result.append("\n");
+			
+			objectResult.setAverageTimePpsStart(averageTimePpsStart);
+			objectResult.setRmsTimePpsStart(rmsTimePpsStart);
+			objectResult.setTimesPpsStart(timesPpsStart);
 		}
 
 		if (!timesPpsEnd.isEmpty()) {
 			BigDecimal averageTimePpsEnd = BigDecimalUtils.average(timesPpsEnd, 1);
 			BigDecimal rmsTimePpsEnd = BigDecimalUtils.rootMeanSquare(timesPpsEnd, averageTimePpsEnd, 1);
-			result.append("List of times PPS end: ");
-			result.append(BigDecimalUtils.toString(timesPpsEnd, 1));
-			result.append("\n");
-			result.append("Average time PPS end: " + averageTimePpsEnd + " ms ± " + rmsTimePpsEnd);
-			result.append("\n");
+			
+			objectResult.setAverageTimePpsEnd(averageTimePpsEnd);
+			objectResult.setRmsTimePpsEnd(rmsTimePpsEnd);
+			objectResult.setTimesPpsEnd(timesPpsEnd);
 		}
 		
-		return result.toString();
+		return objectResult;
 	}
 
 }
