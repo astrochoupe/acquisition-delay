@@ -12,7 +12,7 @@ import java.util.List;
  * 
  * Create a representation in memory of the file.
  */
-public class TangraCsvFileReader {
+public class TangraCsvFileReader implements FileReader {
 
 	private final String filename;
 	
@@ -25,11 +25,7 @@ public class TangraCsvFileReader {
 		this.filename = filename;
 	}
 
-	/**
-	 * Parse the file.
-	 * 
-	 * @return 
-	 */
+	@Override
 	public List<ObjectInfomation> parseFile() {
 		List<ObjectInfomation> objects = new ArrayList<>();
 		

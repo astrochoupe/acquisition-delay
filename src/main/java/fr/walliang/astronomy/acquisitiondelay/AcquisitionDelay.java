@@ -9,7 +9,7 @@ public class AcquisitionDelay {
 	public String calculate(String filename, int exposureDurationInMs) {
 		StringBuilder result = new StringBuilder();
 		
-		TangraCsvFileReader tangraFile = new TangraCsvFileReader(filename);
+		FileReader tangraFile = new TangraCsvFileReader(filename);
 		List<ObjectInfomation> objects = tangraFile.parseFile();
 		
 		if (objects == null || objects.isEmpty()) {
