@@ -65,6 +65,29 @@ public class BigDecimalUtils {
 
 		return variance;
 	}
+	
+	/**
+	 * Calculate the covariance of two lists of BigDecimal.
+	 * 
+	 * @param x a first list of BigDecimal
+	 * @param avgX the average of the first list
+	 * @param y a second list of BigDecimal
+	 * @param avgY the average of the second list
+	 * @param scale scale of the BigDecimal quotient to be returned
+	 * @return the covariance of the two lists
+	 */
+	public static BigDecimal covariance(List<BigDecimal> x, BigDecimal avgX, List<BigDecimal> y, BigDecimal avgY, int scale) {
+		BigDecimal sum = BigDecimal.ZERO;
+		
+		for (int i = 0; i < x.size(); i++) {
+			BigDecimal firstTerm = x.get(i).subtract(avgX);	
+			BigDecimal secondeTerm = y.get(i).subtract(avgY);
+			BigDecimal multiplication = firstTerm.multiply(secondeTerm);
+			sum = sum.add(multiplication);
+		}
+		
+		return sum.divide(new BigDecimal(x.size()), scale, RoundingMode.HALF_UP);
+	}
 
 	/**
 	 * Return a String that represent a list of BigDecimal.
@@ -89,4 +112,5 @@ public class BigDecimalUtils {
 		result.append("]");
 		return result.toString();
 	}
+
 }

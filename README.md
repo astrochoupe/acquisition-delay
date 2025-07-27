@@ -9,12 +9,26 @@ To know this difference, the principle is to film with the camera a LED that lig
 # Requirement
 
 - Java >= 8
-- A CSV file representing a light curve (usually produced by Tangra) like this :
+- A CSV file produced by Tangra representing a light curve like this :
 
 ```
+Tangra v3.8.0.0
+Measurments of 1 objects
+F:\PPS\2025-07-26-0158_3-PPS.ser
+UntrackedMeasurement Video (SER.8), Time: Timestamp Saving During Recording (SerEmbeddedUtcTime)
+
+
+Reversed Gamma, Colour, Measured Band, Integration, Digital Filter, Signal Method, Background Method, Instrumental Delay Corrections, Camera, AAV Integration, First Frame, Last Frame, Reversed Camera Response, Video File Format, Acquisition Delay (ms)
+1,00,no,Red,no,NoFilter,AperturePhotometry,AverageBackground,Not Required,TimeBox,,0,2993,,SER,0,0
+
+Object, Type, Aperture, Tolerance, FWHM, Measured, StartingX, StartingY, Fixed
+1,OccultedStar,7,80,2,00,NaN,yes,827,0,370,0,no
+
+
 FrameNo,Time (UT),Signal (1), Background (1)
-0,[02:47:20.867],33.000,22.000
-1,[02:47:20.907],63.000,0.0000
+0,[01:57:18.751],466.00,452.00
+1,[01:57:18.790],438.00,450.00
+2,[01:57:18.830],449.00,454.00
 ```
 
 Example files are given in the src/main/config folder.
@@ -39,7 +53,8 @@ Or as a last resort use this command line (replace x.x.x by the version number):
 java -jar acquisition-delay-x.x.x.jar
 ```
 
-A window opens. Choose your exposure time and select your CSV file.
+A window opens. Choose your exposure time, the Y position where you want to know the acquisition delay
+(for a rolling shutter sensor) or -1 to disable and select your CSV file.
 
 The file is processed and the result appears:
 
@@ -97,6 +112,12 @@ or
 java -jar acquisition-delay.jar exposureDurationInMs filename
 ```
 
+or
+
+```console
+java -jar acquisition-delay.jar exposureDurationInMs filename YPosition
+```
+
 Examples:
 
 ```console
@@ -113,6 +134,12 @@ or
 
 ```console
 java -jar acquisition-delay.jar 30 myLightCurve.csv
+```
+
+or
+
+```console
+java -jar acquisition-delay.jar 30 myLightCurve.csv 370
 ```
 
 The result is shown in the console, like this :

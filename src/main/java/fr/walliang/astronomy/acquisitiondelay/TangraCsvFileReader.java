@@ -119,6 +119,10 @@ public class TangraCsvFileReader implements FileReader {
 						break;
 					}
 
+					// reliability (case when y position is not found)
+					if(objects.size() <= numObject) {
+						objects.add(new ObjectInfomation(0));
+					}
 					ObjectInfomation object = objects.get(numObject);
 					object.addMeasure(new MeasurePoint(timeInMs, signal, background));
 					numObject++;

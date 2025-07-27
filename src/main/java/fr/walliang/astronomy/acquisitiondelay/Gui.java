@@ -24,6 +24,8 @@ public class Gui extends JFrame {
 	
 	private JSpinner exposureField;
 	
+	private JSpinner yPositionField;
+	
 	private JTextArea textArea;
 
 	@Override
@@ -34,7 +36,7 @@ public class Gui extends JFrame {
 		// close window when click on the cross
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		setSize(500, 350);
+		setSize(500, 400);
 
 		// create a label for exposure field
 		JLabel exposureLabel = new JLabel("Exposure time (ms):");
@@ -45,6 +47,16 @@ public class Gui extends JFrame {
 		spinnerModel.setMaximum(99);
 		exposureField = new JSpinner(spinnerModel);
 		exposureField.setValue(40);
+		
+		// create a label for exposure field
+		JLabel yPositionLabel = new JLabel("Y position:");
+		
+		// create the exposure field
+		SpinnerNumberModel spinnerModel2 = new SpinnerNumberModel();
+		spinnerModel2.setMinimum(-1);
+		spinnerModel2.setMaximum(9999);
+		yPositionField = new JSpinner(spinnerModel2);
+		yPositionField.setValue(0);
 		
 		// create a button
 		JButton openFileButton = new JButton("Open CSV file from Tangra...");
@@ -74,7 +86,7 @@ public class Gui extends JFrame {
 		});
 
 		// create a textarea
-		textArea = new JTextArea(15,40);
+		textArea = new JTextArea(18,40);
 		textArea.setEditable(false);
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		
@@ -84,6 +96,8 @@ public class Gui extends JFrame {
 		// add components to panel
 		panel.add(exposureLabel);
 		panel.add(exposureField);
+		panel.add(yPositionLabel);
+		panel.add(yPositionField);
 		panel.add(openFileButton);
 		panel.add(scrollPane);
 
@@ -98,8 +112,11 @@ public class Gui extends JFrame {
 		Integer exposure = (Integer) exposureField.getValue();
 		System.out.println("Exposure: " + exposure + " ms");
 		
+		Integer yPosition = (Integer) yPositionField.getValue();
+		System.out.println("Y position: " + yPosition);
+		
 		AcquisitionDelay acquisitionDelay = new AcquisitionDelay();
-		String result = acquisitionDelay.calculate(file.getAbsolutePath(), exposure);
+		String result = acquisitionDelay.calculate(file.getAbsolutePath(), exposure, yPosition);
 		
 		textArea.setText(result);
 	}
