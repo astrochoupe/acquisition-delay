@@ -39,12 +39,11 @@ public class TangraCsvFileReader implements FileReader {
 		try {
 			List<String> lines = Files.readAllLines(file);
 
+			int numObjectForY = 0;
 			for (String line : lines) {
 				lineNumber++;
 				// debug
 				// System.out.println("Line " + lineNumber + " : " + line);
-				
-				// TODO : parse file to get Y coordinate of the object
 
 				String[] fields = line.split(",");
 				// debug
@@ -62,6 +61,20 @@ public class TangraCsvFileReader implements FileReader {
 				} catch (NumberFormatException e) {
 					System.err.println("Line " + lineNumber + " column 1 is not an integer. Skipping this line.");
 					continue;
+				}
+				
+				// parse file to get Y coordinate of the object
+				if(fields.length == 12 || fields.length == 13) {
+					int y;
+					
+					if(fields.length == 12) {
+						y = Integer.parseInt(fields[9]);
+					} else {
+						y = Integer.parseInt(fields[10]);
+					}
+					
+					objects.add(new ObjectInfomation(y));
+					numObjectForY++;
 				}
 
 				String time = fields[1];
@@ -106,9 +119,6 @@ public class TangraCsvFileReader implements FileReader {
 						break;
 					}
 
-					if(objects.size() <= numObject) {
-						objects.add(new ObjectInfomation(0));
-					}
 					ObjectInfomation object = objects.get(numObject);
 					object.addMeasure(new MeasurePoint(timeInMs, signal, background));
 					numObject++;

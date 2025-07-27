@@ -23,9 +23,19 @@ public class AcquisitionDelay {
 			List<MeasurePoint> measurePoints = object.getMeasures();
 			ObjectResult objectResult = calculatePrecisely(measurePoints, exposureDurationInMs);
 			
-			result.append("==== OBJECT " + numObject++ + " ====");
+			result.append("==== OBJECT ");
+			result.append( numObject++);
+			result.append(" (y=");
+			result.append(object.getY());
+			result.append(")");
+			result.append(" ====");
 			result.append("\n");
 			result.append(objectResult);
+		}
+		
+		// if 2 objects or more, we can calculate a linear trend for rolling shutter sensors
+		if(objects.size() >= 2) {
+			
 		}
 		
 		System.out.print(result);
