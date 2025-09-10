@@ -92,7 +92,7 @@ public class AcquisitionDelay {
 			
 			// we are interested by the values when the light is increasing or decreasing
 			// skip first measurement because it can't be compared to the previous
-			if (illuminancePercentage > 0.1 && illuminancePercentage < 0.9  && nbMeasurement > 1) {
+			if (illuminancePercentage > 0.2 && illuminancePercentage < 0.8  && nbMeasurement > 1) {
 				// if light is increasing
 				if (illuminancePercentage > previousIlluminancePercentage) {
 					int timeInMs = measurePoint.getTimeInMs();
@@ -123,19 +123,23 @@ public class AcquisitionDelay {
 		if (!timesPpsStart.isEmpty()) {
 			BigDecimal averageTimePpsStart = BigDecimalUtils.average(timesPpsStart, 1);
 			BigDecimal rmsTimePpsStart = BigDecimalUtils.rootMeanSquare(timesPpsStart, averageTimePpsStart, 1);
+			BigDecimal uncertaintyPpsStart = BigDecimalUtils.uncertainty(rmsTimePpsStart, timesPpsStart.size());
 			
 			objectResult.setAverageTimePpsStart(averageTimePpsStart);
 			objectResult.setRmsTimePpsStart(rmsTimePpsStart);
 			objectResult.setTimesPpsStart(timesPpsStart);
+			objectResult.setUncertaintyPpsStart(uncertaintyPpsStart);
 		}
 
 		if (!timesPpsEnd.isEmpty()) {
 			BigDecimal averageTimePpsEnd = BigDecimalUtils.average(timesPpsEnd, 1);
 			BigDecimal rmsTimePpsEnd = BigDecimalUtils.rootMeanSquare(timesPpsEnd, averageTimePpsEnd, 1);
+			BigDecimal uncertaintyPpsEnd = BigDecimalUtils.uncertainty(rmsTimePpsEnd, timesPpsEnd.size());
 			
 			objectResult.setAverageTimePpsEnd(averageTimePpsEnd);
 			objectResult.setRmsTimePpsEnd(rmsTimePpsEnd);
 			objectResult.setTimesPpsEnd(timesPpsEnd);
+			objectResult.setUncertaintyPpsEnd(uncertaintyPpsEnd);
 		}
 		
 		return objectResult;

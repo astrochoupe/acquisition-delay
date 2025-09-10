@@ -9,10 +9,14 @@ public class ObjectResult {
 	BigDecimal averageTimePpsStart;
 
 	BigDecimal rmsTimePpsStart;
+	
+	BigDecimal uncertaintyPpsStart;
 
 	BigDecimal averageTimePpsEnd;
 
 	BigDecimal rmsTimePpsEnd;
+	
+	BigDecimal uncertaintyPpsEnd;
 
 	List<BigDecimal> timesPpsStart = new ArrayList<>();
 
@@ -70,6 +74,22 @@ public class ObjectResult {
 		this.timesPpsEnd = timesPpsEnd;
 	}
 
+	public BigDecimal getUncertaintyPpsStart() {
+		return uncertaintyPpsStart;
+	}
+
+	public void setUncertaintyPpsStart(BigDecimal uncertaintyPpsStart) {
+		this.uncertaintyPpsStart = uncertaintyPpsStart;
+	}
+
+	public BigDecimal getUncertaintyPpsEnd() {
+		return uncertaintyPpsEnd;
+	}
+
+	public void setUncertaintyPpsEnd(BigDecimal uncertaintyPpsEnd) {
+		this.uncertaintyPpsEnd = uncertaintyPpsEnd;
+	}
+	
 	@Override
 	public String toString() {
 		if (timesPpsStart.isEmpty() && timesPpsEnd.isEmpty()) {
@@ -82,7 +102,7 @@ public class ObjectResult {
 			result.append("List of times PPS start: ");
 			result.append(BigDecimalUtils.toString(timesPpsStart, 1));
 			result.append("\n");
-			result.append("Average time PPS start: " + averageTimePpsStart + " ms ± " + rmsTimePpsStart);
+			result.append("Average time PPS start: " + averageTimePpsStart + " ms ± " + uncertaintyPpsStart + " (sigma = " + rmsTimePpsStart + ")");
 			result.append("\n");
 		}
 
@@ -90,7 +110,7 @@ public class ObjectResult {
 			result.append("List of times PPS end: ");
 			result.append(BigDecimalUtils.toString(timesPpsEnd, 1));
 			result.append("\n");
-			result.append("Average time PPS end: " + averageTimePpsEnd + " ms ± " + rmsTimePpsEnd);
+			result.append("Average time PPS end: " + averageTimePpsEnd + " ms ± " + uncertaintyPpsEnd + " (sigma = " + rmsTimePpsEnd + ")");
 			result.append("\n");
 		}
 		

@@ -46,6 +46,66 @@ public class BigDecimalUtils {
 			return BigDecimal.ZERO;
 		}
 	}
+	
+	/**
+	 * Uncertainty of a measurement (confidence level of 95%).
+	 * 
+	 * @param estStdDev estimator of the standard deviation of a list of BigDecimal.
+	 * @param nbItems Number of items in list
+	 * @return uncertainty
+	 */
+	public static BigDecimal uncertainty(BigDecimal estStdDev, int nbItems) {
+		BigDecimal k = BigDecimalUtils.studentFactor(nbItems);
+		
+		BigDecimal sqrtNbItems = BigDecimal.valueOf(Math.sqrt(nbItems));
+		
+		return k.multiply(estStdDev).divide(sqrtNbItems, 2, RoundingMode.HALF_UP);
+	}
+	
+	/**
+	 * Return the Student factor from the number of item in a list of values
+	 * with a confidence of 95%.
+	 * 
+	 * @param nbItems  Number of items in list
+	 */
+	public static BigDecimal studentFactor(int nbItems) {
+		if(nbItems < 2) {
+			throw new IllegalArgumentException("nbItems must be greater or egal than 2");
+		}
+		
+		switch (nbItems) {
+		case 2:
+			return BigDecimal.valueOf(12.71);
+		case 3:
+			return BigDecimal.valueOf(4.3);
+		case 4:
+			return BigDecimal.valueOf(3.18);
+		case 5:
+			return BigDecimal.valueOf(2.78);
+		case 6:
+			return BigDecimal.valueOf(2.57);
+		case 7:
+			return BigDecimal.valueOf(2.45);
+		case 8:
+			return BigDecimal.valueOf(2.36);
+		case 9:
+			return BigDecimal.valueOf(2.31);
+		case 10:
+			return BigDecimal.valueOf(2.26);
+		case 11:
+			return BigDecimal.valueOf(2.23);
+		case 12:
+			return BigDecimal.valueOf(2.2);
+		case 13:
+			return BigDecimal.valueOf(2.18);
+		case 14:
+			return BigDecimal.valueOf(2.16);
+		case 15:
+			return BigDecimal.valueOf(2.14);
+		default:
+			return BigDecimal.valueOf(2);
+		}
+	}
 
 	/**
 	 * Calculate the variance of a list of BigDecimal.
