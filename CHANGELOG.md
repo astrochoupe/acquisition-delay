@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.1.0] - 2025-07-27
+
+Feature: add linear trend calculation for rolling shutter sensors
+
 ## [0.0.5] - 2025-07-15
 
 Fix a problem of compatibility with Java 8
