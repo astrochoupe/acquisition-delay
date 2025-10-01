@@ -59,7 +59,7 @@ public class BigDecimalUtils {
 		
 		BigDecimal sqrtNbItems = BigDecimal.valueOf(Math.sqrt(nbItems));
 		
-		return k.multiply(estStdDev).divide(sqrtNbItems, 2, RoundingMode.HALF_UP);
+		return k.multiply(estStdDev).divide(sqrtNbItems, 1, RoundingMode.HALF_UP);
 	}
 	
 	/**

@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.1.1] - ?
+## [0.1.1] - 2025-10-02
 
 Feature: add uncertainty calculation
 

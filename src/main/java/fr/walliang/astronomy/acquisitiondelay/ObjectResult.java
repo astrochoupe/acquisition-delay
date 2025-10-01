@@ -102,7 +102,7 @@ public class ObjectResult {
 			result.append("List of times PPS start: ");
 			result.append(BigDecimalUtils.toString(timesPpsStart, 1));
 			result.append("\n");
-			result.append("Average time PPS start: " + averageTimePpsStart + " ms ± " + uncertaintyPpsStart + " (sigma = " + rmsTimePpsStart + ")");
+			result.append("Average time PPS start: " + averageTimePpsStart + " ± " + uncertaintyPpsStart + " ms");
 			result.append("\n");
 		}
 
@@ -110,7 +110,7 @@ public class ObjectResult {
 			result.append("List of times PPS end: ");
 			result.append(BigDecimalUtils.toString(timesPpsEnd, 1));
 			result.append("\n");
-			result.append("Average time PPS end: " + averageTimePpsEnd + " ms ± " + uncertaintyPpsEnd + " (sigma = " + rmsTimePpsEnd + ")");
+			result.append("Average time PPS end: " + averageTimePpsEnd + " ± " + uncertaintyPpsEnd + " ms");
 			result.append("\n");
 		}
 		
