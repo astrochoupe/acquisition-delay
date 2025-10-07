@@ -81,12 +81,16 @@ public class AcquisitionDelay {
 		int signalMin = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).min().getAsInt();
 
 		int signalMax = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).max().getAsInt();
+		
+		int median = IntUtils.median(measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu));
+		
+		int baseLine = median;
 
 		double previousIlluminancePercentage = 0.0f;
 		for (MeasurePoint measurePoint : measurePoints) {
 			int signal = measurePoint.getSignalInAdu();
 
-			double illuminancePercentage = (double) (signal - signalMin) / (signalMax - signalMin);
+			double illuminancePercentage = (double) (signal - baseLine) / (signalMax - baseLine);
 
 			BigDecimal illuminanceDuration = BigDecimal.valueOf(exposureDurationInMs * illuminancePercentage);
 			
