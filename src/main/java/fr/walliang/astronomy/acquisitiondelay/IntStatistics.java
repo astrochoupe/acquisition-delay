@@ -55,5 +55,13 @@ public class IntStatistics {
 				+ average + ", variance=" + variance + ", standardDeviation=" + standardDeviation + ", uncertainty="
 				+ uncertainty + "]";
 	}
+
+	public double getAverage() {
+		return average;
+	}
+
+	public double getUncertainty() {
+		return uncertainty;
+	}
 	
 }

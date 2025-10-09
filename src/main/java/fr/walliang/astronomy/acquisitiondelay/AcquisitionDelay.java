@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AcquisitionDelay {
 
@@ -84,8 +85,17 @@ public class AcquisitionDelay {
 		
 		int median = IntUtils.median(measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu));
 		
-		int baseLine = median;
+		int baselineUpperLimit = median + (median - signalMin);
+		List<Integer> signalsWhenLedTurnedOff = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).filter(e -> e < baselineUpperLimit).boxed().collect(Collectors.toList());
+		IntStatistics baselineStats = new IntStatistics(signalsWhenLedTurnedOff);
+		
+		//System.out.println("median = " + median);
+		//System.out.println("baselineUpperLimit = " + baselineUpperLimit);
+		//System.out.println(baselineStats);
+		
+		int baseLine = (int) baselineStats.getAverage();
 
+		
 		double previousIlluminancePercentage = 0.0f;
 		for (MeasurePoint measurePoint : measurePoints) {
 			int signal = measurePoint.getSignalInAdu();
