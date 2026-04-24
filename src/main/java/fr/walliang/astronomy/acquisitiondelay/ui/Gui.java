@@ -3,6 +3,10 @@ package fr.walliang.astronomy.acquisitiondelay.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -29,6 +33,10 @@ public class Gui extends JFrame {
 	private JSpinner yPositionField;
 	
 	private JTextArea textArea;
+
+	private static final String PROPERTIES_FILE_NAME = ".acquisition-delay.properties";
+	private static final String LAST_DIR_KEY = "lastDirectory";
+	private final File propertiesFile = new File(System.getProperty("user.home"), PROPERTIES_FILE_NAME);
 
 	@Override
 	protected void frameInit() {
@@ -68,6 +76,12 @@ public class Gui extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser();
 
+				// try to set last used directory from properties
+				File lastDir = loadLastDirectory();
+				if (lastDir != null) {
+					fileChooser.setCurrentDirectory(lastDir);
+				}
+
 				// select file only
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 				// file filter for CSV
@@ -81,6 +95,13 @@ public class Gui extends JFrame {
 					File selectedFile = fileChooser.getSelectedFile();
 
 					System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+					// save last directory (with security checks)
+					File parent = selectedFile.getParentFile();
+					if (parent != null && parent.exists() && parent.isDirectory() && parent.canRead()) {
+						saveLastDirectory(parent);
+					} else {
+						System.err.println("Selected file parent directory is not valid for saving properties: " + parent);
+					}
 					
 					readAndProcessFile(selectedFile);
 				}
@@ -121,6 +142,73 @@ public class Gui extends JFrame {
 		String result = acquisitionDelay.calculate(file.getAbsolutePath(), exposure, yPosition);
 		
 		textArea.setText(result);
+	}
+
+	/**
+	 * Load last directory from properties file located in user's home directory.
+	 * Returns null if no valid directory is found or on error.
+	 */
+	private File loadLastDirectory() {
+		if (propertiesFile == null) {
+			return null;
+		}
+		if (!propertiesFile.exists() || !propertiesFile.canRead()) {
+			return null;
+		}
+		Properties props = new Properties();
+		try (FileInputStream fis = new FileInputStream(propertiesFile)) {
+			props.load(fis);
+			String path = props.getProperty(LAST_DIR_KEY);
+			if (path == null || path.trim().isEmpty()) {
+				return null;
+			}
+			File dir = new File(path);
+			try {
+				dir = dir.getCanonicalFile();
+			} catch (IOException e) {
+				// ignore and use original
+			}
+			if (dir.exists() && dir.isDirectory() && dir.canRead()) {
+				return dir;
+			}
+		} catch (IOException e) {
+			System.err.println("Unable to read properties file: " + e.getMessage());
+		}
+		return null;
+	}
+
+	/**
+	 * Save last directory to properties file in user's home directory.
+	 * Performs basic security checks (exists, is directory, readable).
+	 */
+	private void saveLastDirectory(File dir) {
+		if (dir == null) {
+			return;
+		}
+		try {
+			File canonical = dir.getCanonicalFile();
+			if (!canonical.exists() || !canonical.isDirectory() || !canonical.canRead()) {
+				System.err.println("Directory is not valid to save: " + canonical);
+				return;
+			}
+
+			Properties props = new Properties();
+			// if properties file exists, try to keep existing properties
+			if (propertiesFile.exists() && propertiesFile.canRead()) {
+				try (FileInputStream fis = new FileInputStream(propertiesFile)) {
+					props.load(fis);
+				} catch (IOException e) {
+					// ignore and overwrite
+				}
+			}
+
+			props.setProperty(LAST_DIR_KEY, canonical.getAbsolutePath());
+			try (FileOutputStream fos = new FileOutputStream(propertiesFile)) {
+				props.store(fos, "Acquisition Delay properties");
+			}
+		} catch (IOException e) {
+			System.err.println("Unable to save properties file: " + e.getMessage());
+		}
 	}
 
 	public static void main(String[] args) {
