@@ -1,4 +1,6 @@
-package fr.walliang.astronomy.acquisitiondelay;
+package fr.walliang.astronomy.acquisitiondelay.ui;
+
+import fr.walliang.astronomy.acquisitiondelay.AcquisitionDelay;
 
 /**
  * Command line interface to run the program.

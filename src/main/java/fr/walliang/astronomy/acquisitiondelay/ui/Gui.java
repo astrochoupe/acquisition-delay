@@ -1,4 +1,4 @@
-package fr.walliang.astronomy.acquisitiondelay;
+package fr.walliang.astronomy.acquisitiondelay.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +14,8 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import fr.walliang.astronomy.acquisitiondelay.AcquisitionDelay;
 
 /**
  * Graphical user interface.
