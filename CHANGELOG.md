@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.1.2] - 2026-04-25
+
+Feature: use average of signals when LED is turned off or on as baselines (instead of min an max).
+Feature: add PPS duration
+
 ## [0.1.1] - 2025-10-02
 
 Feature: add uncertainty calculation
