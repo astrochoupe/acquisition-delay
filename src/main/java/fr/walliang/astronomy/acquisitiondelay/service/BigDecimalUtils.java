@@ -1,4 +1,4 @@
-package fr.walliang.astronomy.acquisitiondelay;
+package fr.walliang.astronomy.acquisitiondelay.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -1,4 +1,4 @@
-package fr.walliang.astronomy.acquisitiondelay;
+package fr.walliang.astronomy.acquisitiondelay.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
+
+import fr.walliang.astronomy.acquisitiondelay.service.IntUtils;
 
 class IntUtilsTest {
 

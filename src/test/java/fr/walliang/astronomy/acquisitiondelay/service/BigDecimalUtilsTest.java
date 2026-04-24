@@ -1,4 +1,4 @@
-package fr.walliang.astronomy.acquisitiondelay;
+package fr.walliang.astronomy.acquisitiondelay.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
+
+import fr.walliang.astronomy.acquisitiondelay.service.BigDecimalUtils;
 
 public class BigDecimalUtilsTest {
 

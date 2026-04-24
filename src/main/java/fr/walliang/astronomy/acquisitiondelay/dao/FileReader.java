@@ -1,4 +1,4 @@
-package fr.walliang.astronomy.acquisitiondelay;
+package fr.walliang.astronomy.acquisitiondelay.dao;
 
 import java.util.List;
 

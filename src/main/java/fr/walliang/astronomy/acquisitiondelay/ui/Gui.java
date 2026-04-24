@@ -15,7 +15,7 @@ import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import fr.walliang.astronomy.acquisitiondelay.AcquisitionDelay;
+import fr.walliang.astronomy.acquisitiondelay.service.AcquisitionDelay;
 
 /**
  * Graphical user interface.

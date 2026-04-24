@@ -1,10 +1,15 @@
-package fr.walliang.astronomy.acquisitiondelay;
+package fr.walliang.astronomy.acquisitiondelay.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import fr.walliang.astronomy.acquisitiondelay.dao.FileReader;
+import fr.walliang.astronomy.acquisitiondelay.dao.MeasurePoint;
+import fr.walliang.astronomy.acquisitiondelay.dao.ObjectInfomation;
+import fr.walliang.astronomy.acquisitiondelay.dao.TangraCsvFileReader;
 
 public class AcquisitionDelay {
 
