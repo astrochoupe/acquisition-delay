@@ -114,6 +114,12 @@ public class ObjectResult {
 			result.append("\n");
 		}
 		
+		if (!timesPpsStart.isEmpty() && !timesPpsEnd.isEmpty()) {
+			BigDecimal ppsDuration = averageTimePpsEnd.subtract(averageTimePpsStart);
+			result.append("PPS duration: " + ppsDuration);
+			result.append("\n");
+		}
+		
 		return result.toString();
 	}
 	
