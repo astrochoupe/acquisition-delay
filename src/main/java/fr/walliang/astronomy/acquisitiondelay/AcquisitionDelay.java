@@ -94,13 +94,34 @@ public class AcquisitionDelay {
 		//System.out.println(baselineStats);
 		
 		int baseLine = (int) baselineStats.getAverage();
-
+		int stdDev = (int) baselineStats.getStandardDeviation();
+		
+		int topLineLowerLimit = signalMax - 5 * stdDev;
+		List<Integer> signalsWhenLedTurnedOn = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).filter(e -> e > topLineLowerLimit).boxed().collect(Collectors.toList());
+		IntStatistics topLineStats = new IntStatistics(signalsWhenLedTurnedOn);
+		
+		//System.out.println(topLineStats);
+		int topLine = (int) topLineStats.getAverage();
 		
 		double previousIlluminancePercentage = 0.0f;
 		for (MeasurePoint measurePoint : measurePoints) {
 			int signal = measurePoint.getSignalInAdu();
 
-			double illuminancePercentage = (double) (signal - baseLine) / (signalMax - baseLine);
+			double illuminancePercentage = (double) (signal - baseLine) / (topLine - baseLine);
+			
+			// uncertainty calculation
+			double a = signal - baseLine;
+			double b = topLine - baseLine;
+			double uncertaintyA = 2 * baselineStats.getUncertainty();
+			double uncertaintyB = topLineStats.getUncertainty() + baselineStats.getUncertainty();
+			
+			double uncertaintyIlluminancePercentage = illuminancePercentage * (uncertaintyA/a + uncertaintyB/b);
+			
+			//System.out.println("Uncertainties :");
+			//System.out.println("illuminancePercentage = " + illuminancePercentage + "%");
+			//System.out.println("incertitudeIlluminancePercentage = " + incertitudeIlluminancePercentage + "%");
+			double uncertaintyExposureDurationInMs = exposureDurationInMs * uncertaintyIlluminancePercentage;
+			//System.out.println("incertitudeExposureDurationInMs = " + incertitudeExposureDurationInMs + "ms");
 
 			BigDecimal illuminanceDuration = BigDecimal.valueOf(exposureDurationInMs * illuminancePercentage);
 			

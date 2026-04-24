@@ -60,8 +60,12 @@ public class IntStatistics {
 		return average;
 	}
 
+	public double getStandardDeviation() {
+		return standardDeviation;
+	}
+	
 	public double getUncertainty() {
 		return uncertainty;
 	}
-	
+
 }
