@@ -19,6 +19,9 @@ import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.walliang.astronomy.acquisitiondelay.service.AcquisitionDelay;
 
 /**
@@ -27,6 +30,8 @@ import fr.walliang.astronomy.acquisitiondelay.service.AcquisitionDelay;
 public class Gui extends JFrame {
 
 	private static final long serialVersionUID = 290801423057511060L;
+	
+	private static final Logger LOGGER = LogManager.getLogger(Gui.class);
 	
 	private JSpinner exposureField;
 	
@@ -94,13 +99,13 @@ public class Gui extends JFrame {
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
 					File selectedFile = fileChooser.getSelectedFile();
 
-					System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+					LOGGER.info("Selected file: {}", selectedFile.getAbsolutePath());
 					// save last directory (with security checks)
 					File parent = selectedFile.getParentFile();
 					if (parent != null && parent.exists() && parent.isDirectory() && parent.canRead()) {
 						saveLastDirectory(parent);
 					} else {
-						System.err.println("Selected file parent directory is not valid for saving properties: " + parent);
+						LOGGER.error("Selected file parent directory is not valid for saving properties: {}", parent);
 					}
 					
 					readAndProcessFile(selectedFile);
@@ -133,10 +138,10 @@ public class Gui extends JFrame {
 		textArea.setText("Reading file and processing...");
 		
 		Integer exposure = (Integer) exposureField.getValue();
-		System.out.println("Exposure: " + exposure + " ms");
+		LOGGER.info("Exposure: {} ms", exposure);
 		
 		Integer yPosition = (Integer) yPositionField.getValue();
-		System.out.println("Y position: " + yPosition);
+		LOGGER.info("Y position: {}", yPosition);
 		
 		AcquisitionDelay acquisitionDelay = new AcquisitionDelay();
 		String result = acquisitionDelay.calculate(file.getAbsolutePath(), exposure, yPosition);

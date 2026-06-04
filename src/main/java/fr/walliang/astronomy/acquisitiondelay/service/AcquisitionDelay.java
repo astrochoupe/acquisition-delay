@@ -6,12 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import fr.walliang.astronomy.acquisitiondelay.dao.FileReader;
 import fr.walliang.astronomy.acquisitiondelay.dao.MeasurePoint;
 import fr.walliang.astronomy.acquisitiondelay.dao.ObjectInfomation;
 import fr.walliang.astronomy.acquisitiondelay.dao.TangraCsvFileReader;
 
 public class AcquisitionDelay {
+	private static final Logger LOGGER = LogManager.getLogger(AcquisitionDelay.class);
 
 	/**
 	 * Calculate acquisition delay.
@@ -29,7 +33,7 @@ public class AcquisitionDelay {
 		
 		if (objects == null || objects.isEmpty()) {
 			String errorMessage = "Nothing to measure";
-			System.err.println(errorMessage);
+			LOGGER.error(errorMessage);
 			return errorMessage;
 		}
 
@@ -70,7 +74,7 @@ public class AcquisitionDelay {
 			result.append(" ms");
 		}
 		
-		System.out.print(result);
+		LOGGER.info("{}", result);
 		return result.toString();
 	}
 
@@ -94,9 +98,9 @@ public class AcquisitionDelay {
 		List<Integer> signalsWhenLedTurnedOff = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).filter(e -> e < baselineUpperLimit).boxed().collect(Collectors.toList());
 		IntStatistics baselineStats = new IntStatistics(signalsWhenLedTurnedOff);
 		
-		//System.out.println("median = " + median);
-		//System.out.println("baselineUpperLimit = " + baselineUpperLimit);
-		//System.out.println(baselineStats);
+		LOGGER.debug("median = {}", median);
+		LOGGER.debug("baselineUpperLimit = {}", baselineUpperLimit);
+		LOGGER.debug("{}", baselineStats);
 		
 		int baseLine = (int) baselineStats.getAverage();
 		int stdDev = (int) baselineStats.getStandardDeviation();
@@ -105,7 +109,7 @@ public class AcquisitionDelay {
 		List<Integer> signalsWhenLedTurnedOn = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).filter(e -> e > topLineLowerLimit).boxed().collect(Collectors.toList());
 		IntStatistics topLineStats = new IntStatistics(signalsWhenLedTurnedOn);
 		
-		//System.out.println(topLineStats);
+		LOGGER.debug("{}", topLineStats);
 		int topLine = (int) topLineStats.getAverage();
 		
 		double previousIlluminancePercentage = 0.0f;
@@ -122,11 +126,11 @@ public class AcquisitionDelay {
 			
 			double uncertaintyIlluminancePercentage = illuminancePercentage * (uncertaintyA/a + uncertaintyB/b);
 			
-			//System.out.println("Uncertainties :");
-			//System.out.println("illuminancePercentage = " + illuminancePercentage + "%");
-			//System.out.println("incertitudeIlluminancePercentage = " + incertitudeIlluminancePercentage + "%");
+			LOGGER.debug("Uncertainties :");
+			LOGGER.debug("illuminancePercentage = {}%", illuminancePercentage);
+			LOGGER.debug("uncertaintyIlluminancePercentage = {}%", uncertaintyIlluminancePercentage);
 			double uncertaintyExposureDurationInMs = exposureDurationInMs * uncertaintyIlluminancePercentage;
-			//System.out.println("incertitudeExposureDurationInMs = " + incertitudeExposureDurationInMs + "ms");
+			LOGGER.debug("uncertaintyExposureDurationInMs = {}ms", uncertaintyExposureDurationInMs);
 
 			BigDecimal illuminanceDuration = BigDecimal.valueOf(exposureDurationInMs * illuminancePercentage);
 			
