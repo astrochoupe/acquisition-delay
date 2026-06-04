@@ -1,0 +1,32 @@
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Force CRLF for Java source and common Windows-friendly text files
+*.java    text eol=crlf
+*.xml     text eol=crlf
+*.properties text eol=crlf
+*.csv     text eol=crlf
+*.txt     text eol=crlf
+*.md      text eol=crlf
+
+# Windows scripts: CRLF
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+
+# POSIX shell scripts should keep LF
+*.sh      text eol=lf
+
+# Binary files
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.zip     binary
+*.jar     binary
+*.exe     binary
+*.class   binary
+*.xls     binary
+*.xlsx    binary
+
+# Ensure the .gitattributes file itself uses CRLF on Windows
+.gitattributes text eol=crlf
