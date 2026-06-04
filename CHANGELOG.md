@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.1.4] - 2026-06-XX
+
+Feature: add library for logging (log4j2)
+
 ## [0.1.3] - 2026-04-25
 
 Feature: when the user selects a file to analyze, the dialog box opens the directory of the last analyzed file.
