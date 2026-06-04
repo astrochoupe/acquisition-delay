@@ -177,7 +177,7 @@ public class Gui extends JFrame {
 				return dir;
 			}
 		} catch (IOException e) {
-			System.err.println("Unable to read properties file: " + e.getMessage());
+			LOGGER.error("Unable to read properties file: {}", e.getMessage());
 		}
 		return null;
 	}
@@ -193,7 +193,7 @@ public class Gui extends JFrame {
 		try {
 			File canonical = dir.getCanonicalFile();
 			if (!canonical.exists() || !canonical.isDirectory() || !canonical.canRead()) {
-				System.err.println("Directory is not valid to save: " + canonical);
+				LOGGER.error("Directory is not valid to save: {}", canonical);
 				return;
 			}
 
@@ -212,7 +212,7 @@ public class Gui extends JFrame {
 				props.store(fos, "Acquisition Delay properties");
 			}
 		} catch (IOException e) {
-			System.err.println("Unable to save properties file: " + e.getMessage());
+			LOGGER.error("Unable to save properties file: {}", e.getMessage());
 		}
 	}
 
