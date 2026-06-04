@@ -49,9 +49,9 @@ public class Cli {
 				LOGGER.info("Default value for Y position will be used: {}", yPosition);
 			} else if (args.length >= 3) {
 				try {
-					yPosition = Integer.parseInt(args[3]);
+					yPosition = Integer.parseInt(args[2]);
 				} catch (NumberFormatException e) {
-					LOGGER.error("Third argument must be an integer.", e);
+					LOGGER.error("Third argument (Y position) must be an integer.", e);
 					return;
 				}
 			}
