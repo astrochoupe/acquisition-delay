@@ -11,7 +11,7 @@
     </Appenders>
 
     <Loggers>
-        <Logger name="fr.walliang.astronomy.acquisitiondelay" level="DEBUG" />
+        <Logger name="fr.walliang.astronomy.acquisitiondelay" level="INFO" />
         <Root level="WARN">
             <AppenderRef ref="CONSOLE"/>
         </Root>
