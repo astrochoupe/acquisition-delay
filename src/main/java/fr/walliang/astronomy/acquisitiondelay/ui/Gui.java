@@ -1,23 +1,23 @@
 package fr.walliang.astronomy.acquisitiondelay.ui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTextArea;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,125 +27,87 @@ import fr.walliang.astronomy.acquisitiondelay.service.AcquisitionDelay;
 /**
  * Graphical user interface.
  */
-public class Gui extends JFrame {
+public class Gui extends Application {
 
-	private static final long serialVersionUID = 290801423057511060L;
-	
 	private static final Logger LOGGER = LogManager.getLogger(Gui.class);
-	
-	private JSpinner exposureField;
-	
-	private JSpinner yPositionField;
-	
-	private JTextArea textArea;
+
+	private Spinner<Integer> exposureField;
+	private Spinner<Integer> yPositionField;
+	private TextArea textArea;
 
 	private static final String PROPERTIES_FILE_NAME = ".acquisition-delay.properties";
 	private static final String LAST_DIR_KEY = "lastDirectory";
 	private final File propertiesFile = new File(System.getProperty("user.home"), PROPERTIES_FILE_NAME);
 
 	@Override
-	protected void frameInit() {
-		super.frameInit();
-		setTitle("Acquisition delay measurement");
+	public void start(Stage primaryStage) {
+		primaryStage.setTitle("Acquisition delay measurement");
 
-		// close window when click on the cross
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		Label exposureLabel = new Label("Exposure time (ms):");
+		exposureField = new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, 40));
+		exposureField.setEditable(true);
 
-		setSize(500, 400);
+		Label yPositionLabel = new Label("Y position:");
+		yPositionField = new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 9999, 0));
+		yPositionField.setEditable(true);
 
-		// create a label for exposure field
-		JLabel exposureLabel = new JLabel("Exposure time (ms):");
-		
-		// create the exposure field
-		SpinnerNumberModel spinnerModel = new SpinnerNumberModel();
-		spinnerModel.setMinimum(1);
-		spinnerModel.setMaximum(99);
-		exposureField = new JSpinner(spinnerModel);
-		exposureField.setValue(40);
-		
-		// create a label for exposure field
-		JLabel yPositionLabel = new JLabel("Y position:");
-		
-		// create the exposure field
-		SpinnerNumberModel spinnerModel2 = new SpinnerNumberModel();
-		spinnerModel2.setMinimum(-1);
-		spinnerModel2.setMaximum(9999);
-		yPositionField = new JSpinner(spinnerModel2);
-		yPositionField.setValue(0);
-		
-		// create a button
-		JButton openFileButton = new JButton("Open CSV file from Tangra...");
+		Button openFileButton = new Button("Open CSV file from Tangra...");
+		openFileButton.setOnAction(e -> {
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Open CSV file");
+			fileChooser.getExtensionFilters().add(
+				new FileChooser.ExtensionFilter("CSV files", "*.csv")
+			);
 
-		openFileButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
+			File lastDir = loadLastDirectory();
+			if (lastDir != null) {
+				fileChooser.setInitialDirectory(lastDir);
+			}
 
-				// try to set last used directory from properties
-				File lastDir = loadLastDirectory();
-				if (lastDir != null) {
-					fileChooser.setCurrentDirectory(lastDir);
+			File selectedFile = fileChooser.showOpenDialog(primaryStage);
+			if (selectedFile != null) {
+				LOGGER.info("Selected file: {}", selectedFile.getAbsolutePath());
+				File parent = selectedFile.getParentFile();
+				if (parent != null && parent.exists() && parent.isDirectory() && parent.canRead()) {
+					saveLastDirectory(parent);
+				} else {
+					LOGGER.error("Selected file parent directory is not valid for saving properties: {}", parent);
 				}
-
-				// select file only
-				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				// file filter for CSV
-				fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("CSV files", "csv"));
-				// not all file types accepted
-				fileChooser.setAcceptAllFileFilterUsed(false);
-
-				int returnValue = fileChooser.showOpenDialog(null);
-
-				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					File selectedFile = fileChooser.getSelectedFile();
-
-					LOGGER.info("Selected file: {}", selectedFile.getAbsolutePath());
-					// save last directory (with security checks)
-					File parent = selectedFile.getParentFile();
-					if (parent != null && parent.exists() && parent.isDirectory() && parent.canRead()) {
-						saveLastDirectory(parent);
-					} else {
-						LOGGER.error("Selected file parent directory is not valid for saving properties: {}", parent);
-					}
-					
-					readAndProcessFile(selectedFile);
-				}
+				readAndProcessFile(selectedFile);
 			}
 		});
 
-		// create a textarea
-		textArea = new JTextArea(18,40);
+		textArea = new TextArea();
 		textArea.setEditable(false);
-		JScrollPane scrollPane = new JScrollPane(textArea);
-		
-		// create main panel
-		JPanel panel = new JPanel();
+		textArea.setPrefRowCount(18);
+		textArea.setPrefColumnCount(40);
+		ScrollPane scrollPane = new ScrollPane(textArea);
+		scrollPane.setFitToWidth(true);
+		scrollPane.setFitToHeight(true);
 
-		// add components to panel
-		panel.add(exposureLabel);
-		panel.add(exposureField);
-		panel.add(yPositionLabel);
-		panel.add(yPositionField);
-		panel.add(openFileButton);
-		panel.add(scrollPane);
+		VBox root = new VBox(10,
+			exposureLabel, exposureField,
+			yPositionLabel, yPositionField,
+			openFileButton,
+			scrollPane
+		);
+		root.setPadding(new Insets(10));
 
-		// add panel to window
-		add(panel);
-
+		primaryStage.setScene(new Scene(root, 500, 400));
+		primaryStage.show();
 	}
 
 	private void readAndProcessFile(File file) {
 		textArea.setText("Reading file and processing...");
-		
-		Integer exposure = (Integer) exposureField.getValue();
+
+		Integer exposure = exposureField.getValue();
 		LOGGER.info("Exposure: {} ms", exposure);
-		
-		Integer yPosition = (Integer) yPositionField.getValue();
+
+		Integer yPosition = yPositionField.getValue();
 		LOGGER.info("Y position: {}", yPosition);
-		
+
 		AcquisitionDelay acquisitionDelay = new AcquisitionDelay();
 		String result = acquisitionDelay.calculate(file.getAbsolutePath(), exposure, yPosition);
-		
 		textArea.setText(result);
 	}
 
@@ -154,9 +116,6 @@ public class Gui extends JFrame {
 	 * Returns null if no valid directory is found or on error.
 	 */
 	private File loadLastDirectory() {
-		if (propertiesFile == null) {
-			return null;
-		}
 		if (!propertiesFile.exists() || !propertiesFile.canRead()) {
 			return null;
 		}
@@ -198,7 +157,6 @@ public class Gui extends JFrame {
 			}
 
 			Properties props = new Properties();
-			// if properties file exists, try to keep existing properties
 			if (propertiesFile.exists() && propertiesFile.canRead()) {
 				try (FileInputStream fis = new FileInputStream(propertiesFile)) {
 					props.load(fis);
@@ -217,9 +175,7 @@ public class Gui extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		JFrame frame = new Gui();
-		frame.setLocationRelativeTo(null); // center window
-		frame.setVisible(true);
+		launch(args);
 	}
 
 }

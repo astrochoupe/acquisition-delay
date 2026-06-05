@@ -8,10 +8,11 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+
 		<!-- Versions centralised for easy updates -->
+		<javafx.version>21.0.7</javafx.version>
 		<junit.version>5.9.3</junit.version>
 		<log4j2.version>2.26.0</log4j2.version>
 		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
@@ -38,7 +39,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>fr.walliang.astronomy.acquisitiondelay.ui.Gui</mainClass>
+							<mainClass>fr.walliang.astronomy.acquisitiondelay.ui.GuiLauncher</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -55,6 +56,12 @@
 	</distributionManagement>
 
 	<dependencies>
+		<!-- JavaFX UI controls -->
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>${javafx.version}</version>
+		</dependency>
 		<!-- Logging API -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

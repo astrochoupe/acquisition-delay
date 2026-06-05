@@ -2,7 +2,9 @@
 
 ## [0.1.4] - 2026-06-XX
 
+Feature: use JavaFX UI instead of Swing UI
 Feature: add library for logging (log4j2)
+Requires Java 11
 
 ## [0.1.3] - 2026-04-25
 
