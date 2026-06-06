@@ -13,7 +13,7 @@
 
 		<!-- Versions centralised for easy updates -->
 		<javafx.version>21.0.7</javafx.version>
-		<junit.version>5.9.3</junit.version>
+		<junit.version>5.14.4</junit.version>
 		<log4j2.version>2.26.0</log4j2.version>
 		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
