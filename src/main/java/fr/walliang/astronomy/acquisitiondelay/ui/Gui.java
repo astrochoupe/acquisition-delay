@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.util.Properties;
 
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -15,6 +17,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -34,6 +39,8 @@ public class Gui extends Application {
 	private Spinner<Integer> exposureField;
 	private Spinner<Integer> yPositionField;
 	private TextArea textArea;
+	private Label fileLabel;
+	private Button openFileButton;
 
 	private static final String PROPERTIES_FILE_NAME = ".acquisition-delay.properties";
 	private static final String LAST_DIR_KEY = "lastDirectory";
@@ -43,15 +50,31 @@ public class Gui extends Application {
 	public void start(Stage primaryStage) {
 		primaryStage.setTitle("Acquisition delay measurement");
 
+		GridPane form = new GridPane();
+		form.setHgap(8);
+		form.setVgap(8);
+
 		Label exposureLabel = new Label("Exposure time (ms):");
 		exposureField = new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 99, 40));
 		exposureField.setEditable(true);
+		exposureField.setPrefWidth(90);
 
 		Label yPositionLabel = new Label("Y position:");
 		yPositionField = new Spinner<>(new SpinnerValueFactory.IntegerSpinnerValueFactory(-1, 9999, 0));
 		yPositionField.setEditable(true);
+		yPositionField.setPrefWidth(90);
 
-		Button openFileButton = new Button("Open CSV file from Tangra...");
+		form.add(exposureLabel, 0, 0);
+		form.add(exposureField, 1, 0);
+		form.add(yPositionLabel, 0, 1);
+		form.add(yPositionField, 1, 1);
+
+		openFileButton = new Button("Open CSV file from Tangra...");
+		fileLabel = new Label("No file selected");
+		fileLabel.setStyle("-fx-text-fill: gray;");
+		HBox fileRow = new HBox(10, openFileButton, fileLabel);
+		fileRow.setAlignment(Pos.CENTER_LEFT);
+
 		openFileButton.setOnAction(e -> {
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("Open CSV file");
@@ -73,6 +96,8 @@ public class Gui extends Application {
 				} else {
 					LOGGER.error("Selected file parent directory is not valid for saving properties: {}", parent);
 				}
+				fileLabel.setText(selectedFile.getName());
+				fileLabel.setStyle("-fx-text-fill: black;");
 				readAndProcessFile(selectedFile);
 			}
 		});
@@ -84,31 +109,51 @@ public class Gui extends Application {
 		ScrollPane scrollPane = new ScrollPane(textArea);
 		scrollPane.setFitToWidth(true);
 		scrollPane.setFitToHeight(true);
+		VBox.setVgrow(scrollPane, Priority.ALWAYS);
 
 		VBox root = new VBox(10,
-			exposureLabel, exposureField,
-			yPositionLabel, yPositionField,
-			openFileButton,
+			form,
+			fileRow,
 			scrollPane
 		);
 		root.setPadding(new Insets(10));
 
-		primaryStage.setScene(new Scene(root, 500, 400));
+		primaryStage.setScene(new Scene(root, 550, 450));
+		primaryStage.setMinWidth(400);
+		primaryStage.setMinHeight(300);
 		primaryStage.show();
 	}
 
 	private void readAndProcessFile(File file) {
-		textArea.setText("Reading file and processing...");
+		textArea.setText("Processing...");
+		openFileButton.setDisable(true);
 
-		Integer exposure = exposureField.getValue();
-		LOGGER.info("Exposure: {} ms", exposure);
+		int exposure = exposureField.getValue();
+		int yPosition = yPositionField.getValue();
+		LOGGER.info("Exposure: {} ms, Y position: {}", exposure, yPosition);
 
-		Integer yPosition = yPositionField.getValue();
-		LOGGER.info("Y position: {}", yPosition);
+		Task<String> task = new Task<String>() {
+			@Override
+			protected String call() {
+				return new AcquisitionDelay().calculate(file.getAbsolutePath(), exposure, yPosition);
+			}
+		};
 
-		AcquisitionDelay acquisitionDelay = new AcquisitionDelay();
-		String result = acquisitionDelay.calculate(file.getAbsolutePath(), exposure, yPosition);
-		textArea.setText(result);
+		task.setOnSucceeded(e -> {
+			textArea.setText(task.getValue());
+			openFileButton.setDisable(false);
+		});
+
+		task.setOnFailed(e -> {
+			Throwable ex = task.getException();
+			LOGGER.error("Calculation failed", ex);
+			textArea.setText("Error: " + ex.getMessage());
+			openFileButton.setDisable(false);
+		});
+
+		Thread thread = new Thread(task);
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	/**
