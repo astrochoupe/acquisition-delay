@@ -15,7 +15,7 @@
 		<javafx.version>21.0.7</javafx.version>
 		<junit.version>5.9.3</junit.version>
 		<log4j2.version>2.26.0</log4j2.version>
-		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
+		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -33,16 +33,27 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>${maven-jar-plugin.version}</version>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>${maven-assembly-plugin.version}</version>
 				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
 					<archive>
 						<manifest>
 							<mainClass>fr.walliang.astronomy.acquisitiondelay.ui.GuiLauncher</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
+				<executions>
+					<execution>
+						<id>assemble-all</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
