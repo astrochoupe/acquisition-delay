@@ -141,7 +141,7 @@ The program can measure several areas (like top, middle and bottom of the sensor
 Requirements: Maven and JDK >= 21.
 
 ```console
-mvn package javafx:jlink
+mvn clean package javafx:jlink
 ```
 
 The platform-specific zip (e.g. `acquisition-delay-x.x.x-win.zip`) is created in the `target/` folder. The Maven profile for the current OS is activated automatically.
