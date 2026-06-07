@@ -9,10 +9,10 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
-public class BigDecimalUtilsTest {
+class BigDecimalUtilsTest {
 
 	@Test
-	public void testAverageWhenNoValue() {
+	void testAverageWhenNoValue() {
 		List<BigDecimal> list = new ArrayList<>();
 		
 		assertThrows(NoSuchElementException.class, () -> {

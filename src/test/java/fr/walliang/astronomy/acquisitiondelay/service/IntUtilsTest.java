@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class IntUtilsTest {
 
 	@Test
-	public void testWithArrayOfLength3() {
+	void testWithArrayOfLength3() {
 		//given
 		IntStream intStream = IntStream.of(0, 1, 2);
 		
@@ -23,7 +23,7 @@ class IntUtilsTest {
 	}
 	
 	@Test
-	public void testWithArrayOfLength2() {
+	void testWithArrayOfLength2() {
 		//given
 		IntStream intStream = IntStream.of(0, 1);
 		
@@ -36,7 +36,7 @@ class IntUtilsTest {
 	}
 	
 	@Test
-	public void testWithArrayOfLength1() {
+	void testWithArrayOfLength1() {
 		//given
 		IntStream intStream = IntStream.of(0);
 		
@@ -49,7 +49,7 @@ class IntUtilsTest {
 	}
 	
 	@Test
-	public void testWithArrayOfLength0() {
+	void testWithArrayOfLength0() {
 		IntStream intStream = IntStream.of();
 		
 		assertThrows(IllegalArgumentException.class, () -> {
