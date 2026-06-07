@@ -38,7 +38,7 @@ public class TangraCsvFileReader implements FileReader {
 		// read CSV file (made with Tangra software) and put data in memory
 		Path file = Paths.get(filename);
 
-		LOGGER.info("Reading {}", file.toAbsolutePath().toString());
+		LOGGER.info("Reading {}", file.toAbsolutePath());
 
 		int lineNumber = 0;
 
@@ -139,7 +139,7 @@ public class TangraCsvFileReader implements FileReader {
 			}
 			LOGGER.info("Reading finished");
 		} catch (IOException e) {
-			LOGGER.error("Error reading file: {}", e);
+			LOGGER.error("Error reading file: {}", file.toAbsolutePath(), e);
 		}
 
 		return objects;
