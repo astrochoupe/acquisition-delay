@@ -4,3 +4,4 @@
 /.settings/
 /target/
 .claude/settings.local.json
+.vscode/settings.json
