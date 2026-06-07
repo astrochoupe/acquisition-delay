@@ -9,8 +9,6 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
-import fr.walliang.astronomy.acquisitiondelay.service.BigDecimalUtils;
-
 public class BigDecimalUtilsTest {
 
 	@Test

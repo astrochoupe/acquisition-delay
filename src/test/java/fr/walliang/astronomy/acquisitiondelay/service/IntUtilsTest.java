@@ -7,8 +7,6 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
-import fr.walliang.astronomy.acquisitiondelay.service.IntUtils;
-
 class IntUtilsTest {
 
 	@Test
