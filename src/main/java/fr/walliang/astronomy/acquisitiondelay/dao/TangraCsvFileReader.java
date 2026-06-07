@@ -59,14 +59,14 @@ public class TangraCsvFileReader implements FileReader {
 
 
 				if (fields.length < 4) {
-					LOGGER.error("Line {} cannot be parsed as comma separated values. There must be at least 4 comma separated fields. Skipping this line.", lineNumber);
+					LOGGER.warn("Line {} cannot be parsed as comma separated values. There must be at least 4 comma separated fields. Skipping this line.", lineNumber);
 					continue;
 				}
 
 				try {
 					int frameNumber = Integer.parseInt(fields[0]);
 				} catch (NumberFormatException e) {
-					LOGGER.error("Line {} column 1 is not an integer. Skipping this line.", lineNumber);
+					LOGGER.warn("Line {} column 1 is not an integer. Skipping this line.", lineNumber);
 					continue;
 				}
 				
@@ -87,17 +87,17 @@ public class TangraCsvFileReader implements FileReader {
 				String time = fields[1];
 				String[] timeSplit = time.split("\\.");
 				if (timeSplit.length != 2) {
-					LOGGER.error("Line {} column 2 cannot separate time in s and time in ms by a point. Skipping this line.", lineNumber);
+					LOGGER.warn("Line {} column 2 cannot separate time in s and time in ms by a point. Skipping this line.", lineNumber);
 					continue;
 				}
 				int timeInMs;
 				try {
 					timeInMs = Integer.valueOf(timeSplit[1].substring(0, 3));
 				} catch (NumberFormatException e1) {
-					LOGGER.error("Line {} column 2 cannot convert time in ms after the point to integer. Skipping this line.", lineNumber);
+					LOGGER.warn("Line {} column 2 cannot convert time in ms after the point to integer. Skipping this line.", lineNumber);
 					continue;
 				} catch (IndexOutOfBoundsException e2) {
-					LOGGER.error("Line {} column 2 string after point is longer that 4 caracters. Skipping this line.", lineNumber);
+					LOGGER.warn("Line {} column 2 string after point is longer that 4 caracters. Skipping this line.", lineNumber);
 					continue;
 				}
 
@@ -109,7 +109,7 @@ public class TangraCsvFileReader implements FileReader {
 					try {
 						signal = convertDecimalStringToInt(fields[col]);
 					} catch (NumberFormatException e) {
-						LOGGER.error("Line {} column {} is not a decimal. Skipping this line.", lineNumber, col+1);
+						LOGGER.warn("Line {} column {} is not a decimal. Skipping this line.", lineNumber, col+1);
 						skipLine = true;
 						break;
 					}
@@ -118,7 +118,7 @@ public class TangraCsvFileReader implements FileReader {
 					try {
 						background = convertDecimalStringToInt(fields[col+1]);
 					} catch (NumberFormatException e) {
-						LOGGER.error("Line {} column {} is not a decimal. Skipping this line.", lineNumber, col+2);
+						LOGGER.warn("Line {} column {} is not a decimal. Skipping this line.", lineNumber, col+2);
 						skipLine = true;
 						break;
 					}
