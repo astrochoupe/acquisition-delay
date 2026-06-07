@@ -1,1 +1,0 @@
-java -jar acquisition-delay-0.1.3.jar

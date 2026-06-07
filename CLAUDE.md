@@ -5,10 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build & Test Commands
 
 ```bash
-# Build fat JAR (includes all dependencies)
-mvn clean package
+# Compile, run tests, and create the jlink image + zip
+mvn package javafx:jlink
 
-# Run all tests
+# Run tests only
 mvn test
 
 # Run a single test class
@@ -17,11 +17,22 @@ mvn test -Dtest=BigDecimalUtilsTest
 # Run a single test method
 mvn test -Dtest=BigDecimalUtilsTest#testAverageWhenNoValue
 
-# Launch the GUI (after building)
-java -jar target/acquisition-delay-*-jar-with-dependencies.jar
+# Launch the GUI from the jlink image (Windows)
+target\acquisition-delay\bin\acquisition-delay.bat
+
+# Create a native installer from the jlink image (requires WiX on Windows; adapt --type for each OS)
+jpackage --type app-image --name "Acquisition Delay" --app-version 1.0.0 \
+  --runtime-image target/acquisition-delay \
+  --module fr.walliang.astronomy.acquisitiondelay/fr.walliang.astronomy.acquisitiondelay.ui.GuiLauncher \
+  --dest target/installer --vendor "Didier Walliang"
+# Replace --type app-image with: msi (Windows, needs WiX), dmg (macOS), deb (Linux)
 ```
 
-The deployable artifact is `target/acquisition-delay-*-jar-with-dependencies.jar` (fat JAR built by `maven-assembly-plugin`). The plain JAR in `target/` is not runnable on its own.
+**Deployable artifacts** — both are produced per platform by the CI:
+- `target/acquisition-delay-*-<platform>.zip` — portable archive (jlink); extract and run `bin/acquisition-delay[.bat]`
+- `target/installer/Acquisition Delay.<ext>` — native installer (jpackage); `.msi` on Windows, `.dmg` on macOS, `.deb` on Linux
+
+Both embed a JRE 21; no prior Java installation required. The Maven profile for the current OS activates automatically (`platform-win`, `platform-linux`, `platform-mac`, `platform-mac-aarch64`).
 
 ## Architecture
 
@@ -47,11 +58,12 @@ Supporting classes: `BigDecimalUtils` (statistical ops — average, RMS, covaria
 
 ## Dependencies & Java Version
 
-- Compiled and run with Java 11 (source/target in pom.xml); Maven build works with JDK ≥ 8.
-- JavaFX 21 is bundled in the fat JAR (via `org.openjfx:javafx-controls`).
-- Logging: Log4j 2 (API + Core).
+- Java 21 source/target (`maven.compiler.release=21` in pom.xml); JDK 21+ required to build.
+- JavaFX 21 is bundled in the jlink image via platform-specific Maven artifacts (`-win`, `-linux`, `-mac`, `-mac-aarch64` classifiers).
+- Logging: Log4j 2 (API + Core, both compile scope so jlink includes the implementation).
 - Tests: JUnit Jupiter 5.
+- JPMS: `src/main/java/module-info.java` declares the module `fr.walliang.astronomy.acquisitiondelay`.
 
 ## CI / Release
 
-GitHub Actions (`.github/workflows/maven-publish.yml`) triggers on release creation, builds with Maven, and publishes to GitHub Packages.
+GitHub Actions (`.github/workflows/maven-publish.yml`) triggers on release creation and runs a matrix build on `windows-latest`, `ubuntu-latest`, and `macos-latest` (JDK 21). Each runner produces a platform-specific zip (`acquisition-delay-<version>-<platform>.zip`) uploaded as a release asset.

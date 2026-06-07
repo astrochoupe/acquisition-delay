@@ -1,10 +1,14 @@
 # Change Log
 
-## [0.1.4] - 2026-06-XX
+## [0.2.0] - 2026-06-07
 
 Feature: use JavaFX UI instead of Swing UI
 Feature: add library for logging (log4j2)
-Requires Java 11
+Feature: self-contained distribution — no Java installation required on the end-user machine
+  - Migrate to JPMS (module-info.java)
+  - Replace fat JAR with a jlink image bundling a JRE 21 and platform-specific JavaFX natives
+  - Add native installers via jpackage: .msi (Windows), .dmg (macOS), .deb (Linux)
+  - CI now produces platform-specific artifacts for Windows, Linux, and macOS
 
 ## [0.1.3] - 2026-04-25
 

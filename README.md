@@ -8,7 +8,6 @@ To know this difference, the principle is to film with the camera a LED that lig
 
 # Requirement
 
-- Java >= 11
 - A CSV file produced by Tangra representing a light curve like this :
 
 ```
@@ -39,19 +38,26 @@ This program assumes that the PPS LED lights up for 100 ms and the time is the m
 
 ## GUI (graphical user interface)
 
-Download the JAR file and the run.bat (Windows) or run.sh (Linux) file.
+Download the installer or the portable archive for your platform from the latest release.
 
-To launch the program, double click on the JAR file.
+**Installer (recommended)** — installs the application like any native program:
 
-If your system asks you which application to open the program with, choose Java.
+| Platform | File |
+|---|---|
+| Windows | `Acquisition Delay-x.x.x.msi` |
+| macOS | `Acquisition Delay-x.x.x.dmg` |
+| Linux (Debian/Ubuntu) | `acquisition-delay_x.x.x_amd64.deb` |
 
-If it doesn't work, click on the run.bat (Windows) or run.sh (Linux) file.
+**Portable archive** — extract and run, no installation needed:
 
-Or as a last resort use this command line (replace x.x.x by the version number):
+| Platform | File |
+|---|---|
+| Windows | `acquisition-delay-x.x.x-win.zip` → run `bin\acquisition-delay.bat` |
+| Linux | `acquisition-delay-x.x.x-linux.zip` → run `bin/acquisition-delay` |
+| macOS (Intel) | `acquisition-delay-x.x.x-mac.zip` → run `bin/acquisition-delay` |
+| macOS (Apple Silicon) | `acquisition-delay-x.x.x-mac-aarch64.zip` → run `bin/acquisition-delay` |
 
-```console
-java -jar acquisition-delay-x.x.x.jar
-```
+No Java installation required — a JRE is bundled in both distributions.
 
 A window opens. Choose your exposure time, the Y position where you want to know the acquisition delay
 (for a rolling shutter sensor) or -1 to disable and select your CSV file.
@@ -59,30 +65,6 @@ A window opens. Choose your exposure time, the Y position where you want to know
 The file is processed and the result appears:
 
 ![Result](assets/screenshot_results.png)
-
-### Associate JAR file to Java on Windows
-
-Start a command line (cmd) as an Administrator
-
-Check your file type association:
-
-```console
-assoc .jar
-ftype jarfile
-```
-
-Change java path like this:
-
-```console
-ftype jarfile=C:\myjavapath\javaw.exe -jar "%1" %*
-```
-
-Which means, that if someone starts a jar file, the command would be:
-
-```console
-C:\myjavapath\javaw.exe -jar "example.jar" parameter1 parameter2
-```
-
 
 ## CLI (command line interface)
 
@@ -156,15 +138,24 @@ The program can measure several areas (like top, middle and bottom of the sensor
 
 # Building / compiling
 
-If you want to build/compile this program by your own, you need Maven and JDK >= 8.
-
-Use this command:
+Requirements: Maven and JDK >= 21.
 
 ```console
-mvn clean package
+mvn package javafx:jlink
 ```
 
-The resulting JAR file is stored in the target/ folder.
+The platform-specific zip (e.g. `acquisition-delay-x.x.x-win.zip`) is created in the `target/` folder. The Maven profile for the current OS is activated automatically.
+
+Create a native installer from the jlink image (requires WiX on Windows; adapt --type for each OS)
+
+Replace --type app-image with: [app-image|exe|msi] (Windows, needs WiX), dmg (macOS), deb (Linux)
+
+```console
+jpackage --type app-image --name "Acquisition Delay" --app-version 1.0.0 \
+  --runtime-image target/acquisition-delay \
+  --module fr.walliang.astronomy.acquisitiondelay/fr.walliang.astronomy.acquisitiondelay.ui.GuiLauncher \
+  --dest target/installer --vendor "Didier Walliang"
+```
 
 # About the calculation
 
