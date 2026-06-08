@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.2.0] - 2026-06-07
+## [0.2.0] - 2026-06-08
 
 Feature: use JavaFX UI instead of Swing UI
 Feature: add library for logging (log4j2)
