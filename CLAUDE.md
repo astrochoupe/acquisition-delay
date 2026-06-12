@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Compile, run tests, and create the jlink image + zip
-mvn package javafx:jlink
+mvn package
 
 # Run tests only
 mvn test
