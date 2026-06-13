@@ -30,7 +30,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Build and create jlink image
-      run: mvn -B package javafx:jlink
+      run: mvn -B package javafx:jlink -Djpackage.skip=true
 
     - name: Create native installer
       shell: bash

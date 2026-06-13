@@ -12,12 +12,18 @@
 
 		<!-- Default platform (overridden by OS-activated profiles below) -->
 		<javafx.platform>linux</javafx.platform>
+		<!-- Set to true to skip the jpackage app-image step (CI manages jpackage itself) -->
+		<jpackage.skip>false</jpackage.skip>
+		<!-- jpackage requires a plain dotted-decimal version (no -SNAPSHOT suffix) -->
+		<installer.version>0.2.1</installer.version>
 
 		<!-- Versions centralised for easy updates -->
+		<exec-maven-plugin.version>3.5.1</exec-maven-plugin.version>
 		<javafx.version>21.0.11</javafx.version>
 		<javafx-maven-plugin.version>0.0.8</javafx-maven-plugin.version>
 		<junit.version>5.14.4</junit.version>
 		<log4j2.version>2.26.0</log4j2.version>
+		<maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
 		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
 		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
@@ -66,6 +72,15 @@
 					<artifactId>javafx-maven-plugin</artifactId>
 					<version>${javafx-maven-plugin.version}</version>
 				</plugin>
+				<plugin>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>${maven-antrun-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>${exec-maven-plugin.version}</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -111,6 +126,56 @@
 						<goals>
 							<goal>jlink</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>clean-installer-output</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<delete dir="${project.build.directory}/installer/Acquisition Delay" quiet="true"/>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>jpackage-app-image</id>
+						<phase>package</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<skip>${jpackage.skip}</skip>
+							<executable>${java.home}/bin/jpackage</executable>
+							<arguments>
+								<argument>--type</argument>
+								<argument>app-image</argument>
+								<argument>--name</argument>
+								<argument>Acquisition Delay</argument>
+								<argument>--app-version</argument>
+								<argument>${installer.version}</argument>
+								<argument>--runtime-image</argument>
+								<argument>${project.build.directory}/acquisition-delay</argument>
+								<argument>--module</argument>
+								<argument>fr.walliang.astronomy.acquisitiondelay/fr.walliang.astronomy.acquisitiondelay.ui.GuiLauncher</argument>
+								<argument>--dest</argument>
+								<argument>${project.build.directory}/installer</argument>
+								<argument>--vendor</argument>
+								<argument>Didier Walliang</argument>
+							</arguments>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

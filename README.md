@@ -144,18 +144,19 @@ Requirements: Maven and JDK >= 21.
 mvn clean package
 ```
 
-The platform-specific zip (e.g. `acquisition-delay-x.x.x-win.zip`) is created in the `target/` folder. The Maven profile for the current OS is activated automatically.
+Two artifacts are produced in `target/` for the current OS (the Maven profile activates automatically):
+- `acquisition-delay-x.x.x-<platform>.zip` — portable archive (jlink)
+- `installer/Acquisition Delay/` — app-image (jpackage)
 
-Create a native installer from the jlink image (requires WiX on Windows; adapt --type for each OS)
-
-Replace --type app-image with: [app-image|exe|msi] (Windows, needs WiX), dmg (macOS), deb (Linux)
+To create a proper native installer (.msi, .dmg, .deb) from the app-image (requires WiX on Windows):
 
 ```console
-jpackage --type app-image --name "Acquisition Delay" --app-version 1.0.0 \
-  --runtime-image target/acquisition-delay \
-  --module fr.walliang.astronomy.acquisitiondelay/fr.walliang.astronomy.acquisitiondelay.ui.GuiLauncher \
+jpackage --type msi --name "Acquisition Delay" --app-version x.x.x \
+  --app-image "target/installer/Acquisition Delay" \
   --dest target/installer --vendor "Didier Walliang"
 ```
+
+Replace `--type msi` with `dmg` (macOS) or `deb` (Linux).
 
 # About the calculation
 

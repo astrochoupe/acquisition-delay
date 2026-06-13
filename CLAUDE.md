@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build & Test Commands
 
 ```bash
-# Compile, run tests, and create the jlink image + zip
+# Compile, run tests, create the jlink image + zip, and produce the app-image
 mvn package
 
 # Run tests only
@@ -20,19 +20,20 @@ mvn test -Dtest=BigDecimalUtilsTest#testAverageWhenNoValue
 # Launch the GUI from the jlink image (Windows)
 target\acquisition-delay\bin\acquisition-delay.bat
 
-# Create a native installer from the jlink image (requires WiX on Windows; adapt --type for each OS)
-jpackage --type app-image --name "Acquisition Delay" --app-version 1.0.0 \
-  --runtime-image target/acquisition-delay \
-  --module fr.walliang.astronomy.acquisitiondelay/fr.walliang.astronomy.acquisitiondelay.ui.GuiLauncher \
+# Create a proper native installer from the app-image (requires WiX on Windows; adapt --type for each OS)
+jpackage --type msi --name "Acquisition Delay" --app-version 0.2.1 \
+  --app-image "target/installer/Acquisition Delay" \
   --dest target/installer --vendor "Didier Walliang"
-# Replace --type app-image with: msi (Windows, needs WiX), dmg (macOS), deb (Linux)
+# Replace --type msi with: dmg (macOS), deb (Linux)
 ```
 
-**Deployable artifacts** — both are produced per platform by the CI:
+**Deployable artifacts** — `mvn package` produces two artifacts per platform:
 - `target/acquisition-delay-*-<platform>.zip` — portable archive (jlink); extract and run `bin/acquisition-delay[.bat]`
-- `target/installer/Acquisition Delay.<ext>` — native installer (jpackage); `.msi` on Windows, `.dmg` on macOS, `.deb` on Linux
+- `target/installer/Acquisition Delay/` — app-image (jpackage); ready to run, no installer needed
 
-Both embed a JRE 21; no prior Java installation required. The Maven profile for the current OS activates automatically (`platform-win`, `platform-linux`, `platform-mac`, `platform-mac-aarch64`).
+Proper native installers (`.msi`, `.dmg`, `.deb`) require a separate `jpackage --type <installer>` step (see command above).
+
+All distributions embed a JRE 21; no prior Java installation required. The Maven profile for the current OS activates automatically (`platform-win`, `platform-linux`, `platform-mac`, `platform-mac-aarch64`).
 
 ## Architecture
 
@@ -63,6 +64,10 @@ Supporting classes: `BigDecimalUtils` (statistical ops — average, RMS, covaria
 - Logging: Log4j 2 (API + Core, both compile scope so jlink includes the implementation).
 - Tests: JUnit Jupiter 5.
 - JPMS: `src/main/java/module-info.java` declares the module `fr.walliang.astronomy.acquisitiondelay`.
+
+## Build & Maven
+
+- In `pom.xml` versions are centralised for easy updates. Properties are in alphabetical order.
 
 ## CI / Release
 
