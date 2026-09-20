@@ -1,4 +1,4 @@
-module fr.walliang.astronomy.acquisitiondelay {
+module acquisitiondelay {
     requires javafx.controls;
     requires org.apache.logging.log4j;
     // Requis explicitement pour que jlink inclue l'implémentation dans l'image
