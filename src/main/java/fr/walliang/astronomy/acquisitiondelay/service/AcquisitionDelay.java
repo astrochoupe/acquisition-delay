@@ -95,7 +95,7 @@ public class AcquisitionDelay {
 		int median = IntUtils.median(measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu));
 		
 		int baselineUpperLimit = median + (median - signalMin);
-		List<Integer> signalsWhenLedTurnedOff = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).filter(e -> e < baselineUpperLimit).boxed().collect(Collectors.toList());
+		List<Integer> signalsWhenLedTurnedOff = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).filter(e -> e <= baselineUpperLimit).boxed().collect(Collectors.toList());
 		IntStatistics baselineStats = new IntStatistics(signalsWhenLedTurnedOff);
 		
 		LOGGER.debug("median = {}", median);
@@ -105,8 +105,16 @@ public class AcquisitionDelay {
 		int baseLine = (int) baselineStats.getAverage();
 		int stdDev = (int) baselineStats.getStandardDeviation();
 		
-		int topLineLowerLimit = signalMax - 5 * stdDev;
-		List<Integer> signalsWhenLedTurnedOn = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).filter(e -> e > topLineLowerLimit).boxed().collect(Collectors.toList());
+		int topLineLowerLimit;
+		if(stdDev != 0) {
+			// if stdDev is not zero, then we take the values 5 sigma above the max signal
+			topLineLowerLimit = signalMax - 5 * stdDev;
+		} else {
+			// else if stdDev is zero, then we take the values 10% under the max signal
+			topLineLowerLimit = (int) (signalMax - (signalMax - signalMin) * 0.1);
+		}
+		
+		List<Integer> signalsWhenLedTurnedOn = measurePoints.stream().mapToInt(MeasurePoint::getSignalInAdu).filter(e -> e >= topLineLowerLimit).boxed().collect(Collectors.toList());
 		IntStatistics topLineStats = new IntStatistics(signalsWhenLedTurnedOn);
 		
 		LOGGER.debug("{}", topLineStats);
