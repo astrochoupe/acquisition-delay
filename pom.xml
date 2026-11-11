@@ -111,7 +111,7 @@
 				<groupId>org.openjfx</groupId>
 				<artifactId>javafx-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>fr.walliang.astronomy.acquisitiondelay/fr.walliang.astronomy.acquisitiondelay.ui.GuiLauncher</mainClass>
+					<mainClass>acquisitiondelay/fr.walliang.astronomy.acquisitiondelay.ui.GuiLauncher</mainClass>
 					<launcher>acquisition-delay</launcher>
 					<jlinkImageName>acquisition-delay</jlinkImageName>
 					<jlinkZipName>acquisition-delay-${project.version}-${javafx.platform}</jlinkZipName>
@@ -169,7 +169,7 @@
 								<argument>--runtime-image</argument>
 								<argument>${project.build.directory}/acquisition-delay</argument>
 								<argument>--module</argument>
-								<argument>fr.walliang.astronomy.acquisitiondelay/fr.walliang.astronomy.acquisitiondelay.ui.GuiLauncher</argument>
+								<argument>acquisitiondelay/fr.walliang.astronomy.acquisitiondelay.ui.GuiLauncher</argument>
 								<argument>--dest</argument>
 								<argument>${project.build.directory}/installer</argument>
 								<argument>--vendor</argument>

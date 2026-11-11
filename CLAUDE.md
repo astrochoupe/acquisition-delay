@@ -63,7 +63,7 @@ Supporting classes: `BigDecimalUtils` (statistical ops — average, RMS, covaria
 - JavaFX 21 is bundled in the jlink image via platform-specific Maven artifacts (`-win`, `-linux`, `-mac`, `-mac-aarch64` classifiers).
 - Logging: Log4j 2 (API + Core, both compile scope so jlink includes the implementation).
 - Tests: JUnit Jupiter 5.
-- JPMS: `src/main/java/module-info.java` declares the module `fr.walliang.astronomy.acquisitiondelay`.
+- JPMS: `src/main/java/module-info.java` declares the module `acquisitiondelay` (the module name must match the `mainClass` and jpackage `--module` values in `pom.xml`).
 
 ## Build & Maven
 
