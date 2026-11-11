@@ -18,18 +18,18 @@
 		<installer.version>0.2.1</installer.version>
 
 		<!-- Versions centralised for easy updates -->
-		<exec-maven-plugin.version>3.5.1</exec-maven-plugin.version>
-		<javafx.version>21.0.11</javafx.version>
+		<exec-maven-plugin.version>3.7.0</exec-maven-plugin.version>
+		<javafx.version>21.0.13</javafx.version>
 		<javafx-maven-plugin.version>0.0.8</javafx-maven-plugin.version>
-		<junit.version>5.14.4</junit.version>
-		<log4j2.version>2.26.0</log4j2.version>
-		<maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
+		<junit.version>6.1.3</junit.version>
+		<log4j2.version>2.26.1</log4j2.version>
+		<maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
 		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
 		<maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
-		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+		<maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+		<maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
 		<maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
-		<maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
 	</properties>
 
 	<dependencyManagement>
